@@ -2,10 +2,12 @@ import numpy as np
 from typing import Union, List
 
 
-def mean_squared_error(y_true: Union[np.ndarray, List],
-                       y_pred: Union[np.ndarray, List]):
+def mean_squared_error(
+    y_true: Union[np.ndarray, List], y_pred: Union[np.ndarray, List]
+):
     """
-    Evaluates the MSE given ground truth and predictions
+    Evaluates the MSE given the ground truth and the
+    predicted labels
 
     Args:
         y_true: ground truth labels
@@ -22,7 +24,7 @@ def mean_squared_error(y_true: Union[np.ndarray, List],
     if isinstance(y_pred, list):
         y_pred = np.asarray(y_pred)
 
-    return np.mean((y_true - y_pred)**2)
+    return np.mean((y_true - y_pred) ** 2)
 
 
 def covariance_matrix(X: np.ndarray):
@@ -39,7 +41,3 @@ def covariance_matrix(X: np.ndarray):
     dc = X - X.mean(axis=0)
     # eventually retrieve 1 / n_samples * dc^T dc
     return (dc.T @ dc) / (n_samples - 1)
-
-
-
-
