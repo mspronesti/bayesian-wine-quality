@@ -1,0 +1,4 @@
+# whatever version of numpy and
+# scipy should be fine
+numpy
+scipy
