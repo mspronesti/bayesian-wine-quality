@@ -1,20 +1,14 @@
-# ScratchML
+# Wine Quality Classification
+Final project for Machine Learning and Pattern Recognition class at Politecnico di Torino (PoliTO).
 
-ScratchML is a python library implementing 
-from scratch machine learning algorithms, developed
-for 01URTOV
-(Machine Learning Pattern Recognition) at PoliTO for 
-the laboratory activities and the final project (yeah, no `sklearn` :cry: ).
+## Short Description
 
-Feel free to use it for the final project if you're attending
-the same class!
+This project consists in discriminating between good and bad quality wines using the popular wine dataset from the UCI repository.
 
-## Installation
-You can install it via pip running
+The original dataset consists of 10 classes (quality 1 to 10). For the project, the dataset has been binarized, collecting all
+wines with low quality (lower than 6) into class 0, and good quality (greater than 6) into class 1. Wines with quality 6 have been discarded to simplify the task
 
-```bash
-pip install git+https://github.com/mspronesti/scratchml
-```
-
+The dataset contains both red and white wines (originally separated, they have been merged).  There are 11 features, that represent physical properties of the
+wine. Classes are partially balanced.
 
 
