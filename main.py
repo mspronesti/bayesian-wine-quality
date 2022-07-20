@@ -1,9 +1,8 @@
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-
 
 n_feats = 11
 n_classes = 2
+
 
 def load_wine(fileName):
     samples = []
@@ -31,5 +30,3 @@ if __name__ == '__main__':
 
     print("ones are %d" % np.sum(y))
     print("zeros are %d" % (len(y) - np.sum(y)))
-
-

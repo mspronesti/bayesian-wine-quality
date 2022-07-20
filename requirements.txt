@@ -1,6 +1,7 @@
-# whatever version of numpy and
+# whatever version of numpy, scipy and
 # matplotlib should be fine
 numpy
 matplotlib
+scipy
 flake8==4.0.1
 pre-commit>=2.17.0
