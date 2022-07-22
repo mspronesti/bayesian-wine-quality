@@ -1,6 +1,0 @@
-# requirements for the version
-# of the project using sklearn
-sklearn
-# install all the requirements from
-# the from-scratch version
--r requirements.txt
