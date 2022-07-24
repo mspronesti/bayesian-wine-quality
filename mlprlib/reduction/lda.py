@@ -1,9 +1,8 @@
 import numpy as np
 
-from .._base import Transformer
+from .._base import Transformer, NotFittedError
 from ..preprocessing import normalize, standardize
 from ..utils import covariance_matrix
-from .._exceptions import NotFittedError
 
 
 class LDA(Transformer):
