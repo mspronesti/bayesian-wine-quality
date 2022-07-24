@@ -1,7 +1,7 @@
-from .reduction import PCA
-import metrics
-
 __all__ = [
-    "PCA",
+    "preprocessing",
+    "reduction",
+    "svm",
+    "utils",
     "metrics"
 ]
