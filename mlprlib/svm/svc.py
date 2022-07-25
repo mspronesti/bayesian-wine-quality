@@ -73,24 +73,25 @@ class SVClassifier(Estimator):
 
         x0 = np.zeros(n_samples)
         bounds = [(0, self.C) for _ in range(n_samples)]
+
         if self.kernel_type == 'linear':
             H = self.kernel(DTRc, DTRc)
         else:
             H = self.kernel(self.x, self.x)
-        # H = z * k(x, x) * z.T
-        H *= z.reshape(z.shape[0], 1)
+        # Hij = zi * zj * k(x, x)
+        H *= z.reshape(z.shape[0], 1).T
         H *= z
 
         def _dual_kernel_obj(v):
             a = v
-            J1 = a.T @ H @ a / 2
+            J1 = a.T @ H @ a * .5
             J2 = - a.T @ np.ones(a.shape)
             grad = H @ a - np.ones(a.shape)
             return J1 + J2, grad.reshape(DTRc.shape[1])
 
         # optimize the objective function
         # m is the optimal alpha
-        m, _, _ = fmin_l_bfgs_b(_dual_kernel_obj, x0, bounds=bounds)
+        m, _, _ = fmin_l_bfgs_b(_dual_kernel_obj, x0, bounds=bounds, factr=1.0)
         self.alpha = m
         res = np.sum(m * z.T * DTRc, axis=1)
         self.W = res[:-1]

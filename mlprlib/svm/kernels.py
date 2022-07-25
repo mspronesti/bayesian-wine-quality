@@ -15,7 +15,7 @@ def linear_kernel(xi, xj):
     return xi.T @ xj
 
 
-def polynomial_kernel(xi, xj, gamma=None, d=0, c=0, csi=0):
+def polynomial_kernel(xi, xj, gamma=None, d=3, c=0, csi=0):
     """
     Computes the Polynomial kernel between xi and xj
     K(xi, xj) = (<xi, xj> + c)^d + csi
@@ -57,5 +57,11 @@ def rbf_kernel(xi, xj, gamma=None, csi=0):
     if gamma is None:
         gamma = 1. / xi.shape[1]
 
-    dist = cdist(xi, xj) ** 2
+    x = (xi ** 2).sum(0)
+    x = x.reshape(x.size, 1)
+    y = (xj ** 2).sum(0)
+    y = y.reshape(1, y.size)
+    xy = xi.T @ xj
+
+    dist = x + y - 2 * xy
     return np.exp(-gamma * dist) + csi
