@@ -18,7 +18,6 @@ def confusion_matrix(y, y_pred):
 
     for i in range(n_labels):
         for j in range(n_labels):
-            # cm_{ij} =
             cm[i, j] = sum((y_pred == i) & (y == j))
     return cm
 
@@ -52,9 +51,12 @@ def f_score(y, y_pred):
 
 def bayes_risk(cm, pi=.5, cfn=1, cfp=1):
     """
-    Computes the un-normalized decision cost function
-    defined as
+    Computes the un-normalized empirical decision cost function
+    defined as (in the binary case)
        DCFu(Cfn, Cfp, π ) = π Cfn * Pfn + (1 − π ) * Cfp * Pfp
+
+    Notice that empirical bayes risk B_emp and un-normalized empirical
+    decision cost are the same thing.
 
     Args:
         cm: confusion matrix
@@ -72,8 +74,8 @@ def bayes_risk(cm, pi=.5, cfn=1, cfp=1):
 
 def normalized_bayes_risk(cm, pi=.5, cfn=1, cfp=1):
     """
-    Computes the normalized decision cost function
-    defined as
+    Computes the normalized empirical decision cost function
+    defined as (in the binary case)
        DCF(Cfn, Cfp, π ) = 1/K * [π Cfn * Pfn + (1 − π ) * Cfp * Pfp]
     being K equal to
        K = min(π * Cfn, (1 − π) * Cfp)
@@ -106,15 +108,16 @@ def optimal_bayes_decision(llr, pi, cfn, cfp):
         the optimal Bayes decision ratio
     """
     threshold = np.log(pi * cfn / ((1 - pi) * cfp))
-    return llr > threshold
+    return llr > - threshold
 
 
 def min_dcf(llr, pi, cfn, cfp, y):
     """
+    Computes the minimum decision cost function
 
     Args:
         llr: likelihood ratio
-        pi: posterior probability
+        pi: prior probability
         cfn: cost of false negative error
         cfp: cost of false positive error
         y: true labels
@@ -122,3 +125,4 @@ def min_dcf(llr, pi, cfn, cfp, y):
     Returns:
 
     """
+    pass

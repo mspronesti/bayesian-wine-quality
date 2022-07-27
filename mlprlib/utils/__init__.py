@@ -1,1 +1,1 @@
-from .statistics import *
+from .probability import *

@@ -1,4 +1,5 @@
 __all__ = [
+    "gaussian",
     "preprocessing",
     "reduction",
     "svm",
