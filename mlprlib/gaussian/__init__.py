@@ -1,5 +1,5 @@
-from .gaussian_mixture import GaussianMixture
-from .gaussian_classifier import (
+from .mixture import GaussianMixture
+from .classifier import (
     GaussianClassifier,
     NaiveBayes,
     TiedGaussian

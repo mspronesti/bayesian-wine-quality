@@ -1,11 +1,13 @@
 import numpy as np
 from .._base import Estimator
+from ..utils.probability import multivariate_normal_logpdf
+from scipy.special import logsumexp
 
 
 def gmm_logpdf(X, gmm):
     """
     Log probability density function for
-    Guassian Mixtures
+    Gaussian Mixtures Models
 
     Args:
         X:
@@ -14,11 +16,19 @@ def gmm_logpdf(X, gmm):
     Returns:
 
     """
-    pass
+    S = np.zeros([len(gmm), X.shape[1]])
+    for g in range(len(gmm)):
+        S[g, :] = multivariate_normal_logpdf(X, gmm[g][1], gmm[g][2] + np.log(gmm[g][0]))
+
+    marginal_log_density = logsumexp(S, axis=0)
+    log_gamma = S - marginal_log_density
+    gamma = np.exp(log_gamma)
+    return marginal_log_density, gamma
 
 
 def eig_constraint(cov, psi):
     """
+    Computes the constraints on the eigenvalues
 
     Args:
         cov: covariance matrix
@@ -68,4 +78,3 @@ class GaussianMixture(Estimator):
 
     def predict(self, X):
         pass
-
