@@ -4,5 +4,6 @@ __all__ = [
     "reduction",
     "svm",
     "utils",
-    "metrics"
+    "metrics",
+    "dataset"
 ]
