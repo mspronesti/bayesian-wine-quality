@@ -18,22 +18,20 @@ n_feats = len(features)
 n_classes = len(classes)
 
 
-def load_wine(fileName):
-    samples = []
-    targets = []
+def load_from(file_path: str, *, return_X_y=True):
+    data = np.loadtxt(file_path, delimiter=",")
+    # for readability only
+    samples = data[:, :-1]
+    labels = data[:, -1]
+    if return_X_y:
+        return samples, labels
+    else:
+        return data
 
-    with open(fileName) as f:
-        for line in f:
-            try:
-                line = line.split(",")
-                sample = np.array(line[0:n_feats], dtype=float).reshape((n_feats, 1))
-                samples.append(sample)
-                targets.append(int(line[n_feats]))
-            except:
-                pass
 
-    data_matrix = np.array(samples).reshape((len(samples), n_feats))
-    class_labels = np.array(targets)
+def load_wine_train(*, return_X_y=True):
+    return load_from('../data/Train.txt', return_X_y=return_X_y)
 
-    return data_matrix, class_labels
 
+def load_wine_test(*, return_X_y=True):
+    return load_from('../data/Test.txt', return_X_y=return_X_y)
