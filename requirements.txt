@@ -1,7 +1,7 @@
 # whatever version of numpy, scipy and
 # matplotlib should be fine
-numpy
-matplotlib
+numpy==1.21.5 # only tested with this version
+matplotlib==3.4.3
 scipy
 seaborn
 flake8==4.0.1

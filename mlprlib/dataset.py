@@ -23,6 +23,7 @@ def load_from(file_path: str, *, return_X_y=True):
     # for readability only
     samples = data[:, :-1]
     labels = data[:, -1]
+
     if return_X_y:
         return samples, labels
     else:
