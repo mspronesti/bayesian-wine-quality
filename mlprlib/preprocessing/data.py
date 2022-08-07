@@ -77,6 +77,6 @@ def cumulative_feature_rank(X: np.ndarray):
         # 1. is a trick to cast it to a float
         # to avoid numerical errors with following division
         rank = 1. + (X[:, i].reshape([n_samples, 1]) < X).sum(axis=1)
-        rank /= (n_feats + 2)
+        rank /= (n_feats + 2.)
         transformed[:, i] = norm.ppf(rank)
     return transformed

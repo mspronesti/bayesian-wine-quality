@@ -19,15 +19,16 @@ n_classes = len(classes)
 
 
 def load_from(file_path: str, *, return_X_y=True):
-    data = np.loadtxt(file_path, delimiter=",")
+    data = np.loadtxt(file_path, delimiter=",").T
     # for readability only
-    samples = data[:, :-1]
-    labels = data[:, -1]
+    samples = data[:-1, :]
+    labels = data[-1, :].astype(np.int32)
 
     if return_X_y:
         return samples, labels
     else:
         return data
+
 
 
 def load_wine_train(*, return_X_y=True):

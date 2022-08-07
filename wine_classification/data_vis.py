@@ -25,7 +25,6 @@ def feat_heatmap(X, label: str = ""):
 
 if __name__ == "__main__":
     X_train, y_train = load_wine_train()
-    X_train = X_train.T
 
     print("ones are %d" % np.sum(y_train))
     print("zeros are %d" % (len(y_train) - np.sum(y_train)))
