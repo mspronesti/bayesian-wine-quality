@@ -3,17 +3,19 @@ from typing import Union, List
 
 
 def mean_squared_error(
-    y_true: Union[np.ndarray, List], y_pred: Union[np.ndarray, List]
+        y_true: Union[np.ndarray, List], y_pred: Union[np.ndarray, List]
 ):
     """
     Evaluates the MSE given the ground truth and the
     predicted labels
 
-    Args:
-        y_true: ground truth labels
-        y_pred: predicted labels
+    Parameters
+    ----------
+    y_true: ground truth labels
+    y_pred: predicted labels
 
-    Returns:
+    Returns
+    -------
         the mean squared error, i.e. the arithmetic
         mean of the square of y_true - y_pred
     """
@@ -29,12 +31,16 @@ def mean_squared_error(
 
 def covariance_matrix(X: np.ndarray):
     """
-    Computes the covariance matrix of X
-    Args:
-        X: array-like
+    Computes the covariance matrix of the
+    data matrix X
 
-    Returns:
-        the covariance matrix
+    Parameters
+    ----------
+    X: ndarray, data matrix
+
+    Returns
+    -------
+        ndarray, covariance matrix
     """
     n_samples, _ = X.shape
     # subtract from X its mean
@@ -43,56 +49,127 @@ def covariance_matrix(X: np.ndarray):
     return (dc.T @ dc) / (n_samples - 1)
 
 
-def normal_pdf(x: np.ndarray, mu: float = 0., sigma: float = 1.):
+def within_class_covariance(X, y):
     """
-    Gaussian probability density function
-    Args:
-        x: input parameters
-        mu: mean of the distribution (default 0)
-        sigma: variance of the distribution (default 1)
+    Computes the within class covariance of data.
 
-    Returns:
+    Parameters
+    ----------
+    X : np.ndarray
+    y : np.ndarray
+
+    Returns
+    -------
+        within class covariance, ndarray
+    """
+    n_samples, n_feats = X.shape
+    sw = np.zeros((n_samples, n_samples))
+
+    for i in range(len(y)):
+        selected = X[:, y == i]
+        sw += np.cov(selected, bias=True) * float(selected.shape[1])
+    return sw / float(n_feats)
+
+
+def between_class_covariance(X, y):
+    """
+    Computes the between class covariance of data.
+
+    Parameters
+    ----------
+    X : np.ndarray
+    y : np.ndarray
+
+    Returns
+    -------
+        between class covariance, ndarray
+    """
+    n_samples, n_feats = X.shape
+    sb = np.zeros((n_samples, n_samples))
+
+    mu = np.row_stack(X.mean(axis=1))
+    for i in range(len(y)):
+        selected = X[:, y == i]
+        muc = np.row_stack(selected.mean(axis=1))
+        muc -= mu
+        sb += float(selected.shape[1]) * np.dot(muc, muc.T)
+    return sb / float(n_feats)
+
+
+def normal_pdf(X: np.ndarray, mu: float = 0., sigma: float = 1.):
+    """
+    Computes the Gaussian probability density function, defined as
+
+       N(x ; μ, σ) = 1 / sqrt(2π σ^2) exp [ - .5 (x - μ)^2 / σ^2)
+
+    Parameters
+    ----------
+    X: input parameters
+    mu: mean of the distribution, default 0
+    sigma: variance of the distribution, default 1
+
+    Returns
+    -------
         ndarray probability of each sample
     """
     k = 1 / np.sqrt(2 * np.pi * sigma)
-    up = .5 * (x - mu) ** 2 / sigma
+    up = .5 * (X - mu) ** 2 / sigma
     return k * np.exp(up)
 
 
-def normal_logpdf(x: np.ndarray, mu: float = 0., sigma: float = 1.):
+def normal_logpdf(X: np.ndarray, mu: float = 0., sigma: float = 1.):
     """
-    Log Gaussian probability density function.
+    Computes the log Gaussian probability density function, i.e.
 
-    Args:
-        x: input parameters
-        mu: mean of the distribution (default 0)
-        sigma: variance of the distribution (default 1)
+        log N(x ; μ, σ) = - .5 [ log(2π) - log(σ^2) - (X - μ)^2 / σ^2]
 
-    Returns:
+    Parameters
+    ----------
+    X: input parameters
+    mu: mean of the distribution, default 0
+    sigma: variance of the distribution, default 1
+
+    Returns
+    -------
         log probability of each sample
     """
-    return -.5 * (np.log(2 * np.pi) - np.log(sigma) - (x - mu)**2 / sigma)
+    return -.5 * (np.log(2 * np.pi) - np.log(sigma) - (X - mu) ** 2 / sigma)
 
 
-def multivariate_normal_logpdf(x: np.ndarray, mu: np.ndarray, cov: np.ndarray):
+def multivariate_normal_logpdf(X: np.ndarray, mu: np.ndarray, cov: np.ndarray):
     """
-    Multivariate Gaussian distribution probability function
+    Computes the log probability density function of a multivariate
+    gaussian distribution, defined as
 
-    Args:
-        x: input matrix
-        mu: mean vector
-        cov: covariance matrix
+        log N(X; μ,Σ) = - .5 [ M log(2π) - log|Σ| - (X - μ)^T Σ^-1 (X - μ) ]
 
-    Returns:
+    being
+    - M the number of samples
+    - |.| the determinant of matrix "."
+    - .^-1 the inverse matrix of "."
 
+    Parameters
+    ----------
+    X: input matrix
+    mu: mean vector
+    cov: covariance matrix
+
+    Returns
+    -------
+        Multivariate normal log density function
     """
-    M = x.shape[0]
-    _, logSigma = np.linalg.slogdet(cov)
+    M = X.shape[0]
+    # log det sigma contains, computed in a robust
+    # and efficient way, the logarithm of the determinant
+    # of the covariance matrix, i.e. log(| cov |)
+    _, log_det_sigma = np.linalg.slogdet(cov)
     cov_inv = np.linalg.inv(cov)
 
-    if x.shape[1] == 1:
-        logN = - .5 * M * np.log(2 * np.pi) - .5 * logSigma - .5 * (x - mu).T @ cov_inv @ (x - mu)
-    else:
-        logN = - .5 * M * np.log(2 * np.pi) - .5 * logSigma - .5 * np.diagonal((x - mu).T @ cov_inv @ (x - mu))
-    return logN
+    # quadratic term
+    quad_term = (X - mu).T @ cov_inv @ (X - mu)
 
+    if X.shape[1] == 1:
+        logN = - .5 * (M * np.log(2 * np.pi) - log_det_sigma - quad_term)
+    else:
+        logN = - .5 * (M * np.log(2 * np.pi) - log_det_sigma - np.diagonal(quad_term))
+    return logN
