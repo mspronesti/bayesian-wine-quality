@@ -32,7 +32,7 @@ class Transformer(ABC):
 
     @abstractmethod
     def fit(self, X, y=None):
-        """Fits the .... instance"""
+        """Fits the Transformer instance"""
         raise NotImplemented("Must have implemented this.")
 
     @abstractmethod

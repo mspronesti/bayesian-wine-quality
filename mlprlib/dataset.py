@@ -30,7 +30,6 @@ def load_from(file_path: str, *, return_X_y=True):
         return data
 
 
-
 def load_wine_train(*, return_X_y=True):
     return load_from('../data/Train.txt', return_X_y=return_X_y)
 

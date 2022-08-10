@@ -6,24 +6,31 @@ from ..utils import covariance_matrix
 
 class PCA(Transformer):
     """Principal Component Analysis algorithm for dimensionality reduction"""
-    def __init__(self, n_components: int = 2):
+    def __init__(self, n_components: int = None):
         """
-        Args:
-            n_components: the number of features
-                for dimensionality reduction
+
+        Parameters
+        ----------
+        n_components: number of features for
+                dimensionality reduction.
+                Default None
         """
         self.n_components = n_components
         self.P = None
 
     def fit(self, X, y=None):
         """
-        Fits the model given the dataset X
-        Args:
-            X: train dataset
-            y: ignored
+        Fits the model given the training
+        data X
 
-        Returns:
-            the fitted instance
+        Parameters
+        ----------
+        X: ndarray, training set
+        y: ndarray, training samples
+
+        Returns
+        -------
+         a fitted PCA instance
         """
         if self.n_components is None:
             n_components = X.shape[0] - 1
@@ -39,18 +46,19 @@ class PCA(Transformer):
 
     def transform(self, X, y=None):
         """
-        Transform the data with the P computed already
-        Args:
-            X: the input dataset to be transformed
-            y: ignored
+        Transform the data with the P matrix
+        computed already
 
-        Returns:
+        Parameters
+        ----------
+        X: ndarray, data to be transformed
+        y: ignored
+
+        Returns
+        -------
             the transformed data
         """
         if X is None or self.P is None:
             raise NotFittedError("This PCA instance has not been fitted."
                                  "Call fit before calling transform")
         return (self.P.T @ X.T).T
-
-    def __str__(self):
-        return f"PCA(n_components={self.n_components})"

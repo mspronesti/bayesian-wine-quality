@@ -1,33 +1,61 @@
-import numpy as np
+import scipy
 
 from .._base import Transformer, NotFittedError
-from ..preprocessing import normalize, standardize
-from ..utils import covariance_matrix
+
+from ..utils import (
+    within_class_covariance,
+    between_class_covariance
+)
 
 
 class LDA(Transformer):
     """Linear Discriminant Analysis algorithm for reduction"""
     def __init__(self, n_components: int = 2):
+        """
+
+        Parameters
+        ----------
+        n_components: number of features of output data
+        """
         self.n_components = n_components
         self.U = None
-        self.X = None
-        self.y = None
-        self.mean = None
-
-    def transform(self, X, y=None):
-        if self.X is None or self.U is None:
-            raise NotFittedError("This PCA instance has not been fitted."
-                                 "Call fit before calling transform")
-        return (self.U.T @ (X - self.mean.T)).T
 
     def fit(self, X, y=None):
+        """
+        Fits the LDA instance with given data X
+
+        Parameters
+        ----------
+        X: ndarray, data matrix
+        y: ignored
+
+        Returns
+        -------
+            fitted LDA instance
+        """
         if self.n_components is None:
             self.n_components = X.shape[0]
-        self.X = X.T
-        self.y = y
 
-        self.mean = self.X.mean(1).reshape((-1, 1))
-        # TODO: to be completed
+        sw = within_class_covariance(X, y)
+        sb = between_class_covariance(X, y)
+        _, U = scipy.linalg.eigh(sb, sw)
+        self.U = U[:, ::-1][:, :self.n_components]
 
-    def __str__(self):
-        return f"LDA(n_components={self.n_components}"
+    def transform(self, X, y=None):
+        """
+        Transforms input data applying linear
+        discriminant analysis
+
+        Parameters
+        ----------
+        X: ndarray, data to be transformed
+        y: ignored
+
+        Returns
+        -------
+            transformed data
+        """
+        if self.U is None:
+            raise NotFittedError("This LDA instance has not been fitted."
+                                 "Call fit before calling transform")
+        return (self.U.T @ X).T
