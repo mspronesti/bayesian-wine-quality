@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def train_test_split(X, y, train_size=.8, seed=0):
+def train_test_split(X, y, test_size=.25, seed=0):
     """
     Splits the dataset in two chunks for training
     and testing according to the `train_size` parameter
@@ -10,7 +10,7 @@ def train_test_split(X, y, train_size=.8, seed=0):
     ----------
     X: ndarray, training samples
     y: ndarray, training labels
-    train_size: percentage of samples used
+    test_size: percentage of samples used
                 for test or validation
     seed: random seed for the split
 
@@ -22,24 +22,29 @@ def train_test_split(X, y, train_size=.8, seed=0):
         y_test: test labels
     """
     np.random.seed(seed)
-    n_train = int(X.shape[0] * train_size)
+    n_test = int(X.shape[0] * test_size)
 
     idx = np.random.permutation(X.shape[0])
-    idx_train = idx[0:n_train]
-    idx_test = idx[n_train:]
+    idx_test = idx[0:n_test]
+    idx_train = idx[n_test:]
 
     return X[idx_train, :], X[idx_test, :], y[idx_train], y[idx_test]
 
 
-def k_fold_split(X, y, n_folds, seed=0):
+def k_fold_split(X, y, n_folds=5, seed=0):
     """
     Splits the input dataset in `n_folds` splits
 
     Parameters
     ----------
     X: ndarray samples
+
     y: ndarray targets
-    n_folds: int
+
+    n_folds:
+        int, number of folds to use for the cross
+        validation. Default 5
+
     seed: random seed
 
     Returns
