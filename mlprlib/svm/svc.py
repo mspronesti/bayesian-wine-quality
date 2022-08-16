@@ -79,7 +79,7 @@ class SVClassifier(Estimator):
         else:
             H = self.kernel(self.x, self.x)
         # Hij = zi * zj * k(x, x)
-        H *= z.reshape(z.shape[0], 1).T
+        H *= z.reshape(z.shape[0], 1)
         H *= z
 
         def _dual_kernel_obj(v):

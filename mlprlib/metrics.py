@@ -17,7 +17,7 @@ def confusion_matrix(y, y_pred):
         confusion matrix as ndarray of
         size (n_labels, n_labels)
     """
-    n_labels = len(np.unique(y_pred))
+    n_labels = len(np.unique(y))
     cm = np.zeros((n_labels, n_labels))
 
     for i in range(n_labels):
@@ -146,7 +146,7 @@ def optimal_bayes_decision(llr, pi=.5, cfn=1, cfp=1):
     # retrieves a np.ndarray of bools instead of 0s and 1s
     # alternative (for readability)
     # >> opt_bayes = np.zeros(llr.shape[0])
-    # >> opt_bayes[llr > - t] = 1
+    # >> opt_bayes[llr > - threshold] = 1
     # >> return opt_bayes
     return llr > - threshold
 
@@ -203,7 +203,7 @@ def min_detection_cost_fun(llr, y, pi=.5, cfn=1, cfp=1):
     for t in np.sort(llr, kind="mergesort"):
         pred = (llr > t).astype(int)
         cm = confusion_matrix(y, pred)
-        dcf = detection_cost_fun(cm, y, pi, cfn, cfp)
+        dcf = normalized_bayes_risk(cm, pi, cfn, cfp)
         # instead of computing all the DCFs and applying
         # min(.), the minimum is computed in the same loop
         # to reduce the complexity
