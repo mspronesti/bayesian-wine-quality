@@ -4,17 +4,39 @@ import numpy as np
 from scipy.stats import norm
 
 
-def standardize(X: np.ndarray):
-    """Standardizes the given dataset X
+def standardize(X: np.ndarray, mean: float = None, std: float = None):
+    """
+    Standardizes the given dataset X
     and retrieves the Gaussian z score
 
-        z_score = (X - E[X]) / sigma(X)
+        z_score = (X - μ) / σ
 
-    Args:
-        X: ndarray, data to normalize
+    Allows specifying a mean and a standard deviation
+    in order to apply the z_score on the test set using
+    the mean and the variance of the training set
+
+    Parameters
+    ----------
+    X:
+        ndarray, data to normalize.
+
+    mean:
+        float, the mean to subtract to center data.
+        If None, use mean of input data.
+
+    std:
+        float, the standard deviation to divide centered
+        data from.
+        If None, use std dev of input data.
+
+    Returns
+    -------
+        Gaussian Z score of the input data
     """
-    mean = X.mean(axis=0)
-    std = X.std(axis=0)
+    if mean is None:
+        mean = X.mean(axis=0)
+    if std is None:
+        std = X.std(axis=0)
     return (X - mean) / std
 
 

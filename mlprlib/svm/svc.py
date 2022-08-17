@@ -10,7 +10,7 @@ _valid_kernels = ['linear', 'rbf', 'poly']
 class SVClassifier(Estimator):
     """Support vector classifier """
 
-    def __init__(self, kernel='linear', C=1, degree=3, gamma=None, coef=0, csi=0):
+    def __init__(self, kernel='linear', C=1, degree=3, gamma=None, coef=0, csi=1):
         """
         Args:
             kernel: {'linear', 'rbf', 'poly'}, default 'rbf'
@@ -82,16 +82,18 @@ class SVClassifier(Estimator):
         H *= z.reshape(z.shape[0], 1)
         H *= z
 
-        def _dual_kernel_obj(v):
-            a = v
-            J1 = a.T @ H @ a * .5
-            J2 = - a.T @ np.ones(a.shape)
-            grad = H @ a - np.ones(a.shape)
-            return J1 + J2, grad.reshape(DTRc.shape[1])
+        def _dual_kernel_obj(alpha):
+            obj = .5 * alpha.T @ H @ alpha
+            # obj -= alpha.T @ np.ones(alpha.shape)
+            obj -= sum(alpha)
+            # compute (manually) the gradient
+            grad = H @ alpha - 1
+            return obj, grad.reshape(DTRc.shape[1])
 
         # optimize the objective function
         # m is the optimal alpha
-        m, _, _ = fmin_l_bfgs_b(_dual_kernel_obj, x0, bounds=bounds, factr=1.0)
+        m, _, _ = fmin_l_bfgs_b(_dual_kernel_obj, x0, bounds=bounds,
+                                approx_grad=False, factr=10000.)
         self.alpha = m
         res = np.sum(m * z.T * DTRc, axis=1)
         self.W = res[:-1]

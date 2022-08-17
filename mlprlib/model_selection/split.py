@@ -22,11 +22,11 @@ def train_test_split(X, y, test_size=.25, seed=0):
         y_test: test labels
     """
     np.random.seed(seed)
-    n_test = int(X.shape[0] * test_size)
+    n_train = int(X.shape[0] * (1. - test_size))
 
     idx = np.random.permutation(X.shape[0])
-    idx_test = idx[0:n_test]
-    idx_train = idx[n_test:]
+    idx_train = idx[0:n_train]
+    idx_test = idx[n_train:]
 
     return X[idx_train, :], X[idx_test, :], y[idx_train], y[idx_test]
 
