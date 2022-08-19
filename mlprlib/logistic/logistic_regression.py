@@ -6,19 +6,25 @@ from .._base import Estimator, NotFittedError
 
 class LogisticRegression(Estimator):
     """Linear Logistic Regression using LBFGS solver"""
-    def __init__(self, norm_scaler=1.):
+
+    def __init__(self, l_scaler: float = 1., pi_t: float = .5):
         """
         Creates a Logistic Regression classifier
 
         Parameters
         ----------
-        norm_scaler:
+        l_scaler:
                 float, coefficient to multiply the norm
                 in the formulation of the optimization
                 problem.
                 Default 1.0
+
+        pi_t :
+            float, prior probability for the true class.
+            Default 0.5
         """
-        self.norm_scaler = norm_scaler
+        self.l_scaler = l_scaler
+        self.pi_t = pi_t
         self.w = None
         self.b = None
 
@@ -49,12 +55,31 @@ class LogisticRegression(Estimator):
             initial_guess = np.zeros(X.shape[1] + 1)
 
         def objective_function(v):
-            w, b = v[:-1].reshape(-1, 1), v[-1]
+            """
+            Objective function for the L-BFGS algorithm
+
+                J(ci, yi) = sum_i {  H(ci, yi) }
+
+
+            """
+            w, b = v[:-1], v[-1]
             # regularization term
-            regular = self.norm_scaler / 2 * np.linalg.norm(w.T, 2) ** 2
-            s = w.T @ X.T + b
-            body = y * np.log1p(np.exp(-s)) + (1 - y) * np.log1p(np.exp(s))
-            return regular + np.sum(body) / y.shape[0]
+            regular = self.l_scaler / 2 * np.linalg.norm(w.T, 2) ** 2
+            # s = w.T @ X + b
+            # body = y * np.log1p(np.exp(-s)) + (1 - y) * np.log1p(np.exp(s))
+            # return regular + np.sum(body) / y.shape[0]
+            pos_f = X.T[:, y == 1]
+            neg_f = X.T[:, y == 0]
+            nt = pos_f.shape[1]
+            nf = neg_f.shape[1]
+
+            s_pos = w.T @ pos_f + b
+            s_neg = w.T @ neg_f + b
+
+            sum_pos = np.sum(np.log1p(np.exp(- s_pos)))
+            sum_neg = np.sum(np.log1p(np.exp(s_neg)))
+
+            return regular + (1 - self.pi_t)/nf * sum_neg + self.pi_t / nt * sum_pos
 
         m, _, _ = fmin_l_bfgs_b(objective_function,
                                 initial_guess,
@@ -94,3 +119,5 @@ class LogisticRegression(Estimator):
             return y_pred, score
         else:
             return y_pred
+
+

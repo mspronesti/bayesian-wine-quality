@@ -23,6 +23,29 @@ from mlprlib.logistic import (
     QuadLogisticRegression
 )
 
+
+def split_data_lr():
+    """
+    Applies a Linear Logistic Regression
+    to the wine dataset after a single split
+    for a set of  lambdas:
+
+        lambdas = [0, 1e-6, 1e-4, 1e-2, 1, 100]
+    """
+    pass
+
+
+def split_data_qlr():
+    """
+    Applies a Quadratic Logistic Regression
+    to the wine dataset after a single split
+    for a set of lambdas:
+
+        lambdas = [0, 1e-6, 1e-4, 1e-2, 1, 100]
+    """
+    pass
+
+
 if __name__ == '__main__':
     # number of folds for cross validation
     n_folds = 5
@@ -32,9 +55,9 @@ if __name__ == '__main__':
     X_gauss = np.load('../results/gaussian_feats.npy').T
     X_std = standardize(X)
 
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
+    X_train, X_val, y_train, y_val = train_test_split(X_gauss, y, test_size=.2)
 
-    lr = LogisticRegression(100)
+    lr = QuadLogisticRegression(1e-6)
     lr.fit(X_train, y_train)
 
     _, score = lr.predict(X_val, return_proba=True)
