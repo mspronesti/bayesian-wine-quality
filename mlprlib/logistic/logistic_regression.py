@@ -58,18 +58,34 @@ class LogisticRegression(Estimator):
             """
             Objective function for the L-BFGS algorithm
 
-                J(ci, yi) = sum_i {  H(ci, yi) }
+                R(w) = l/2 * |w|^2 + pi_T / nt * sum_{i | zi=1} { log (σ(zi*si)) }
+                              + (1 - pi_T) / nf * sum_{i|zi=-1} { log (σ(zi*si)) }
 
+            Where
+                - l is the norm scaler
+                - |.| is the quadratic norm
+                - nt is the number of positive samples
+                - nf is the number of negative samples
+                - pi_T is the prior for the true class
+                - σ(.) is the sigmoid function
+                - zi = 1 for the pos class, -1 for the neg class
+                - si = w^T * x_i + b
 
+            Therefore we optimize an objective made of
+            - a regularization term
+            - the sum over the positive samples of the log-sigmoid of "- s", scaled by the prior over
+              the number of positive samples
+            - the sum over the negative samples of the log sigmoid of "s", scaled by 1-prior over
+              the number of negative samples
             """
             w, b = v[:-1], v[-1]
             # regularization term
             regular = self.l_scaler / 2 * np.linalg.norm(w.T, 2) ** 2
-            # s = w.T @ X + b
-            # body = y * np.log1p(np.exp(-s)) + (1 - y) * np.log1p(np.exp(s))
-            # return regular + np.sum(body) / y.shape[0]
+            # positive sample
             pos_f = X.T[:, y == 1]
+            # negative samples
             neg_f = X.T[:, y == 0]
+
             nt = pos_f.shape[1]
             nf = neg_f.shape[1]
 
