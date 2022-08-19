@@ -20,7 +20,11 @@ class QuadLogisticRegression(LogisticRegression):
         Returns
         -------
             ndarray matrix of size
-            (n_samples^2 + n_samples, n_features)
+
+                (n_samples, n_features^2 + n_features)
+
+            where, for each sample, we have a row of mapped
+            features in the quadratic space
         """
         n_samples, n_feats = X.shape
         # X_mapped contains, for each sample, the mapped
@@ -62,7 +66,7 @@ class QuadLogisticRegression(LogisticRegression):
             Fitted QuadraticLogisticRegression model
         """
         X_2 = QuadLogisticRegression._map_to_quad_space(X)
-        super().fit(X_2, y)
+        return super().fit(X_2, y)
 
     def predict(self, X, return_proba=False):
         X_2 = QuadLogisticRegression._map_to_quad_space(X)
