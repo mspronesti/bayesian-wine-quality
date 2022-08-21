@@ -42,8 +42,8 @@ Hence, we only use models for which we can evaluate a score on the evaluation se
 
 ## Applied Techniques and Models
 
-Since for this class libraries offering already implemented algorithms, like `sklearn`, are not allowed, we also offer an from-scratch
-implementation of all the methods used.
+Since, for this class, libraries offering already implemented algorithms (like `sklearn`) are not allowed, we also offer a from-scratch
+implementation of all the methods used, wrapped into [mlprlib](mlprlib), our custom library for this course.
 
 In particular:
 - Support Vector Classifier with Linear, Polynomial and RBF kernels

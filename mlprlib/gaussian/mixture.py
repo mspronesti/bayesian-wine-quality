@@ -164,20 +164,13 @@ def em_estimation(X: np.ndarray,
             curr_params[g] = (w, mean, cov)
 
         if tied:
-            # tied_cov = np.zeros(shape=(n_feats, n_feats))
-            # for g in range(n_params):
-            #     tied_cov += Z[g] * curr_params[g][2]
-            # tied_cov /= n_samples
-            # TODO: vedere se far così è uguale
             tied_cov = (Z * curr_params[:, 2]) / n_samples
-            # bound tied covariance
+            # bound tied covariance using
+            # the eig constraint
             tied_cov = cov_eig_constraint(tied_cov, psi)
-            # TODO: ho messo questo invece del pezzo commentato
+            # replace covariance with the tied one
+            # computed above
             curr_params[:, 2] = tied_cov
-            # for g in range(n_params):
-            #     # replace the covariance with
-            #     # the tied one computed previously
-            #     curr_params[g][2] = tied_cov
 
 
 def lbg_estimation(X: np.ndarray,
