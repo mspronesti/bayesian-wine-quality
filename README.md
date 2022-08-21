@@ -47,8 +47,9 @@ implementation of all the methods used.
 
 In particular:
 - Support Vector Classifier with Linear, Polynomial and RBF kernels
-- Gaussian Classifier
+- Multivariate Gaussian Classifier
 - Naive Bayes
+- Tied Multivariate Gaussian
 - Gaussian Mixture Model
 - Linear Logistic Regression
 - Quadratic Logistic Regression

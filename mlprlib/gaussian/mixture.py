@@ -13,7 +13,8 @@ def gmm_logpdf(X, gmm: List):
     Parameters
     ----------
     X:
-        ndarray, data matrix
+        ndarray, data matrix in the shape
+            (n_feats, n_samples)
 
     gmm:
         list of components of the GMM
@@ -28,9 +29,17 @@ def gmm_logpdf(X, gmm: List):
            It can be seen as a probability of a data point belonging
            to a cluster c
     """
-    S = np.zeros([len(gmm), X.shape[1]])
+    n_feats, n_samples = X.shape
+    n_params = len(gmm)
+
+    # data structure for the log joints
+    S = np.empty(shape=(n_params, n_samples))
+
     for g in range(len(gmm)):
-        S[g, :] = multivariate_normal_logpdf(X, gmm[g][1], gmm[g][2] + np.log(gmm[g][0]))
+        mean = gmm[g][1]
+        cov = gmm[g][2]
+        ll = multivariate_normal_logpdf(X, mean, cov)
+        S[g, :] = ll + np.log(gmm[g][0])
 
     # marginal densities
     marginal_log_density = logsumexp(S, axis=0)
@@ -61,7 +70,7 @@ def cov_eig_constraint(cov: np.ndarray, eig_bound: float = .01):
     -------
         bounded reconstructed covariance
     """
-    U, s, _ = np.lianlg.svd(cov)
+    U, s, _ = np.linalg.svd(cov)
     # check and set on psi
     s[s < eig_bound] = eig_bound
     # recompute the covariance from the new
@@ -119,6 +128,7 @@ def em_estimation(X: np.ndarray,
     n_params = len(gmm)
     # NOTICE: X is expected transposed
     n_feats, n_samples = X.shape
+
     curr_params = gmm.copy()
     ll_current = np.NaN
 
@@ -128,25 +138,25 @@ def em_estimation(X: np.ndarray,
         # compute marginals and responsibility
         marginals, gamma = gmm_logpdf(X, curr_params)
 
-        ll_current = marginals.sum() / n_samples
+        ll_current = sum(marginals) / n_samples
 
         # evaluate stop condition
-        if np.abs(ll_previous - ll_current) < tol:
+        if np.abs(ll_current - ll_previous) < tol:
             return curr_params
 
         # M-step
         Z = np.sum(gamma, axis=1)
-
         for g in range(n_params):
             # compute stats
             F = np.sum(gamma[g] * X, axis=1)
             S = (gamma[g] * X) @ X.T
 
-            mean = (F / Z[g]).reshape(X.shape[0], 1)
+            mean = (F / Z[g]).reshape(n_feats, 1)
             cov = S / Z[g] - mean @ mean.T
             w = Z[g] / sum(Z)
 
             if diag:
+                # only keep diagonal
                 cov *= np.eye(cov.shape[0])
 
             # bound covariance
@@ -154,17 +164,20 @@ def em_estimation(X: np.ndarray,
             curr_params[g] = (w, mean, cov)
 
         if tied:
-            tied_cov = np.zeros(n_feats, n_feats)
-            for g in range(n_params):
-                tied_cov += Z[g] * curr_params[g][2]
-            tied_cov /= n_samples
+            # tied_cov = np.zeros(shape=(n_feats, n_feats))
+            # for g in range(n_params):
+            #     tied_cov += Z[g] * curr_params[g][2]
+            # tied_cov /= n_samples
             # TODO: vedere se far così è uguale
-            #  tied_cov = (Z * curr_params[:, 2])/n_samples
+            tied_cov = (Z * curr_params[:, 2]) / n_samples
+            # bound tied covariance
             tied_cov = cov_eig_constraint(tied_cov, psi)
-            for g in range(n_params):
-                mu = curr_params[g][1]
-                w = curr_params[g][0]
-                curr_params[g] = (w, mu, tied_cov)
+            # TODO: ho messo questo invece del pezzo commentato
+            curr_params[:, 2] = tied_cov
+            # for g in range(n_params):
+            #     # replace the covariance with
+            #     # the tied one computed previously
+            #     curr_params[g][2] = tied_cov
 
 
 def lbg_estimation(X: np.ndarray,
@@ -233,17 +246,18 @@ def lbg_estimation(X: np.ndarray,
     cov = np.cov(X)
     cov = cov_eig_constraint(cov)
 
+    # initialize parameters
     gmm_1 = [(1.0, mean, cov)]
 
     for _ in range(int(np.log2(n_components))):
         gmm = []
-        for p in gmm_1:
-            w = p[0] / 2
-            cov = p[2]
+        for param in gmm_1:
+            w = param[0] / 2
+            mean = param[1]
+            cov = param[2]
 
             U, s, _ = np.linalg.svd(cov)
             d = U[:, 0:1] * s[0] ** 0.5 * alpha
-            mean = p[1]
 
             gmm.append((w, mean + d, cov))
             gmm.append((w, mean - d, cov))
@@ -254,6 +268,8 @@ def lbg_estimation(X: np.ndarray,
 
 
 class GaussianMixture(Estimator):
+    _valid_cov_types = ['full', 'diag', 'full-tied', 'diag-tied']
+
     def __init__(self,
                  n_components: int = 2,
                  alpha: float = .1,
@@ -282,10 +298,14 @@ class GaussianMixture(Estimator):
 
         cov_type:
             str, describes the type of covariance. Must be one of
-                {'full', tied', 'diag'}.
-                - 'full': each component has its own covariance matrix.
-                - 'tied': all components share the same covariance matrix.
-                - 'diag': each component has its own diagonal covariance matrix.
+                {'full', 'diag', 'full-tied', 'diag-tied'}.
+                - 'full' : use full covariance.
+                - 'diag' : use diagonal covariance to reduce the number
+                           of parameters to estimate.
+                - 'full-tied': use the same full covariance for all GMM
+                            components
+                - 'diag-tied': use the same diag covariance for all GMM
+                            components
                 Default 'full'
 
         tol:
@@ -293,28 +313,78 @@ class GaussianMixture(Estimator):
             when the lower bound average gain is below this threshold.
             Default 1e-6
         """
+        if cov_type == 'full':
+            self.diag, self.tied = (False, False)
+        elif cov_type == 'diag':
+            self.diag, self.tied = (True, False)
+        elif cov_type == 'full-tied':
+            self.diag, self.tied = (False, True)
+        elif cov_type == 'diag-tied':
+            self.diag, self.tied = (True, True)
+        else:
+            raise ValueError("Unknown covariance type %s."
+                             "Valid types are %s"
+                             % (cov_type, self._valid_cov_types))
+
         self.n_components = n_components
         self.alpha = alpha
         self.psi = psi
-        self.cov_type = cov_type
         self.tol = tol
+        # gmm_estimates is going to contain
+        # for each label, the params
         self.gmm_estimates = {}
 
     def fit(self, X, y):
+        """
+        Fits the Gaussian Mixture Model
+        given the training data
+
+        Parameters
+        ----------
+        X: ndarray, training data matrix
+        y: ndarray, target values
+
+        Returns
+        -------
+            fitted GaussianMixture instance
+        """
         n_labels = np.unique(y)
         for label in n_labels:
             # extract all elements having
-            # current label
+            # current label and transpose it
+            # (as the LGB algorithm expects it)
             x_ = X[y == label, :].T
-            posterior = x_.shape[1] / X.shape[0]
-            params = lbg_estimation(x_, )
+            params = lbg_estimation(x_,
+                                    self.n_components,
+                                    alpha=self.alpha,
+                                    psi=self.psi,
+                                    tol=self.tol,
+                                    diag=self.diag,
+                                    tied=self.tied)
+
             self.gmm_estimates[label] = params
 
+        return self
+
     def predict(self, X, return_proba=False):
+        log_densities = []
+        for label in self.gmm_estimates:
+            gm = self.gmm_estimates[label]
+            marginals, _ = gmm_logpdf(X.T, gm)
+            log_densities.append(marginals)
 
-        # pred = ratio >= 0
+        # Notice: this is correct, but just because we
+        # assume 2 labels. Replace with an argmax for
+        # multiclass
+        score = log_densities[1] - log_densities[0]
+        y_pred = (score >= 0).astype(np.int32)
         if return_proba:
-            # return y_pred, score
-            pass
-        # return y_pred
+            return y_pred, score
 
+        return y_pred
+
+    def __str__(self):
+        return "Tied" * self.tied + \
+               "Diag" * self.diag + \
+               f"GMM(n_components={self.n_components}, " \
+               f"alpha={self.alpha})"

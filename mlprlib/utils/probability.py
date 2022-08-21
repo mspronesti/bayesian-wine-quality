@@ -150,9 +150,14 @@ def multivariate_normal_logpdf(X: np.ndarray, mu: np.ndarray, cov: np.ndarray):
 
     Parameters
     ----------
-    X: input matrix
-    mu: mean vector
-    cov: covariance matrix
+    X:
+        ndarray, input data matrix
+        in the shape
+            (n_feats, n_samples)
+    mu:
+        ndarray, mean vector
+    cov:
+        ndarray, covariance matrix
 
     Returns
     -------
@@ -169,7 +174,7 @@ def multivariate_normal_logpdf(X: np.ndarray, mu: np.ndarray, cov: np.ndarray):
     quad_term = (X - mu).T @ cov_inv @ (X - mu)
 
     if X.shape[1] == 1:
-        logN = - .5 * (M * np.log(2 * np.pi) - log_det_sigma - quad_term)
+        log_n = - .5 * (M * np.log(2 * np.pi) + log_det_sigma + quad_term)
     else:
-        logN = - .5 * (M * np.log(2 * np.pi) - log_det_sigma - np.diagonal(quad_term))
-    return logN
+        log_n = - .5 * (M * np.log(2 * np.pi) + log_det_sigma + np.diagonal(quad_term))
+    return log_n
