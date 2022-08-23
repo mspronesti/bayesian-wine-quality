@@ -6,3 +6,4 @@ scipy
 seaborn
 flake8==4.0.1
 pre-commit>=2.17.0
+tqdm

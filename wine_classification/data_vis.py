@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from mlprlib.dataset import load_wine_train, classes, features
+from mlprlib.dataset import (
+    load_wine_train,
+    load_wine_test,
+    classes,
+    features
+)
+
 import seaborn as sb
 from mlprlib.preprocessing import cumulative_feature_rank
 
@@ -44,3 +50,9 @@ if __name__ == "__main__":
     feat_heatmap(X_gauss[:, y_train == 1], "raw_feat_heat1")
 
     np.save("../results/gaussian_feats.npy", X_gauss)
+
+    # Gaussianise test data using training
+    # data in the comparison
+    X_test, _ = load_wine_test()
+    X_test_gauss = cumulative_feature_rank(X_test, X_train)
+    np.save("../results/gaussian_feats_test.npy", X_test_gauss)

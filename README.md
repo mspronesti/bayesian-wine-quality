@@ -56,9 +56,12 @@ In particular:
 
 All of them are applied to the raw data, standardized data and Gaussianized data both for a single train-validation split and for a 5-folds cross validation.
 
-Gaussianized features are obtained computing the inverse of cumulative feature rank $$y = \Phi^{-1} (r(x))$$
-being $r(x)$ the rank of a feature over the training set
+Gaussianized features are obtained computing the inverse of cumulative feature rank 
+
+$$ y = \Phi^{-1} (r(x)) $$
+
+being r(x)$ the rank of a feature over the training set
 
 $$ r(x) = \cfrac{1}{N+2}\left(\sum^{N}_{i=0} X[x < x_i] + 1\right) $$
 
-where $X$ is the data matrix.
+where X is the data matrix.
