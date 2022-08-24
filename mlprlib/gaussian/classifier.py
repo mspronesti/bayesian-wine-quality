@@ -13,7 +13,8 @@ class GaussianClassifier(Estimator):
 
     def __init__(self):
         """
-        Constructs a Gaussian Classifier object
+        Constructs a Multivariate Gaussian Classifier
+
         -----
         estimates contains, for each label
           - label
@@ -28,11 +29,17 @@ class GaussianClassifier(Estimator):
         """
         Fits the Gaussian Classifier
 
-        Args:
-            X: ndarray, training samples
-            y: ndarray, training labels
+        Parameters
+        ----------
+        X:
+            ndarray, data matrix of
+            shape (n_samples, n_feats)
 
-        Returns:
+        y:
+            ndarray, target values
+
+        Returns
+        -------
             fitted GaussianClassifier instance
         """
         return self._fit_helper(X, y, covariance_matrix)
@@ -56,27 +63,42 @@ class GaussianClassifier(Estimator):
             self.estimates.append(estimate)
         return self
 
-    def predict(self, X):
+    def predict(self, X, return_proba=False):
         """
         Predicts from provided unseen data X
         computing class-conditional log probabilities
         for each class
 
-        Args:
-            X: ndarray, test samples
+        Parameters
+        ----------
+        X:
+            ndarray, test matrix
+            of shape (n_samples, n_features)
 
-        Returns:
-            predicted labels
+        return_proba:
+            bool, whether to return the score.
+            Default False
+
+        Returns
+        -------
+            - predicted labels
+            - score if `return_proba` set to True
         """
         scores = []
         for label, mu, cov, prob in self.estimates:
             distro = multivariate_normal_logpdf(X.T, mu.reshape(-1, 1), cov)
-            scores.append(distro + np.log(prob))
+            scores.append(distro)
 
         joint_mat = np.hstack([value.reshape(-1, 1) for value in scores])
         logsum = logsumexp(joint_mat, axis=1)
         self.posterior = joint_mat - logsum.reshape(1, -1).T
-        return np.argmax(self.posterior, axis=1)
+
+        score = np.exp(self.posterior[:, 1] - self.posterior[:, 0])
+        y_pred = np.argmax(self.posterior, axis=1)
+
+        if return_proba:
+            return y_pred, score
+        return y_pred
 
 
 class NaiveBayes(GaussianClassifier):
@@ -86,20 +108,44 @@ class NaiveBayes(GaussianClassifier):
         """
         Fits the Naive Bayes classifier
 
-        Args:
-            X: ndarray, training samples
-            y: ndarray, training labels
+        Parameters
+        ----------
+        X:
+            ndarray, data matrix of
+            shape (n_samples, n_feats)
 
-        Returns:
+        y:
+            ndarray, target values
+
+        Returns
+        -------
             fitted NaiveBayes instance
         """
         return self._fit_helper(X, y, lambda m: np.diag(np.var(m, 0)))
 
 
 class TiedGaussian(GaussianClassifier):
-    """Tied Gaussian Classifier"""
+    """Tied Covariance Multivariate Gaussian Classifier"""
 
     def fit(self, X, y):
+        super().fit(X, y)
+        # compute the tied covariance matrix
+        # averaging all covariance matrices
+        tied_cov = 1. / y.shape[0] * sum([cov * np.sum(y == label) for label, _, cov, _ in self.estimates])
+        self.estimates = [(label, mu, tied_cov, prob) for label, mu, _, prob in self.estimates]
+        return self
+
+
+class TiedNaiveBayes(NaiveBayes):
+    """Tied Covariance Naive Bayes Classifier"""
+
+    def fit(self, X, y):
+        # NOTICE: this fit method is exactly
+        # the same code of the TiedGaussian
+        # the difference is that this class inherits
+        # from NaiveBayes, hence it the tied_cov
+        # already has an additive np.eye(cov.shape[0])
+        # factor multiplying it
         super().fit(X, y)
         # compute the tied covariance matrix
         # averaging all covariance matrices

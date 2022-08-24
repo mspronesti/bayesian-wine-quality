@@ -2,12 +2,14 @@ from .mixture import GaussianMixture
 from .classifier import (
     GaussianClassifier,
     NaiveBayes,
-    TiedGaussian
+    TiedGaussian,
+    TiedNaiveBayes
 )
 
 __all__ = [
     "GaussianMixture",
     "GaussianClassifier",
     "NaiveBayes",
-    "TiedGaussian"
+    "TiedGaussian",
+    "TiedNaiveBayes"
 ]

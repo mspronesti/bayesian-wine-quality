@@ -43,6 +43,6 @@ class Transformer(ABC):
     def fit_transform(self, X, y=None):
         """Fit to data, then transform it"""
         if y is None:
-            self.fit(X).transform(X)
+            return self.fit(X).transform(X)
         else:
-            self.fit(X, y).transform(X, y)
+            return self.fit(X, y).transform(X, y)
