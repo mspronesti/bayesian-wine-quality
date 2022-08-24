@@ -13,7 +13,7 @@ from mlprlib.dataset import (
 
 from mlprlib.model_selection import (
     train_test_split,
-    k_fold_split
+    KFold
 )
 
 from mlprlib.preprocessing import standardize
@@ -45,16 +45,13 @@ def single_split_svm(writer, kernel: str, X, y, **kwargs):
 
 
 def k_fold_svm(writer, k, kernel: str, X, y, **kwargs):
-    # this is a generator, producing the folds
-    split_gen = k_fold_split(X, y, k)
-
     scores = np.empty((0,), dtype=np.float64)
     # labels = np.empty((0,), int)
 
     svc = SVClassifier(C=.1, kernel=kernel, **kwargs)
-    from mlprlib.model_selection import KFold
 
     kf = KFold(k, shuffle=True)
+    # kf.split(.) is a generator, producing the folds
     for idx_train, idx_test in kf.split(X):
         X_train, X_val = X[idx_train], X[idx_test]
         y_train, y_val = y[idx_train], y[idx_test]

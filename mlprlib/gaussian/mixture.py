@@ -5,7 +5,7 @@ from scipy.special import logsumexp
 from typing import List
 
 
-def gmm_logpdf(X, gmm: List):
+def gmm_logpdf(X, gmm: np.ndarray):
     """
     Joint log densities  for
     Gaussian Mixtures Models
@@ -129,7 +129,7 @@ def em_estimation(X: np.ndarray,
     # NOTICE: X is expected transposed
     n_feats, n_samples = X.shape
 
-    curr_params = gmm.copy()
+    curr_params = np.array(gmm, dtype=object)
     ll_current = np.NaN
 
     while True:
@@ -161,16 +161,18 @@ def em_estimation(X: np.ndarray,
 
             # bound covariance
             cov = cov_eig_constraint(cov, psi)
-            curr_params[g] = (w, mean, cov)
+            curr_params[g] = [w, mean, cov]
 
         if tied:
-            tied_cov = (Z * curr_params[:, 2]) / n_samples
-            # bound tied covariance using
-            # the eig constraint
+            tied_cov = sum(Z * curr_params[:, 2]) / n_samples
+            # tied_cov = np.zeros([n_feats, n_feats])
+            # for g in range(n_params):
+            #     tied_cov += Z[g] * curr_params[g][2]
+            # tied_cov /= n_samples
             tied_cov = cov_eig_constraint(tied_cov, psi)
             # replace covariance with the tied one
             # computed above
-            curr_params[:, 2] = tied_cov
+            curr_params[:, 2].fill(tied_cov)
 
 
 def lbg_estimation(X: np.ndarray,
@@ -240,6 +242,8 @@ def lbg_estimation(X: np.ndarray,
     cov = cov_eig_constraint(cov)
 
     # initialize parameters
+    # this list of lists is going
+    # to be converted into an ndarray
     gmm_1 = [(1.0, mean, cov)]
 
     for _ in range(int(np.log2(n_components))):

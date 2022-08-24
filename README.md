@@ -60,7 +60,7 @@ Gaussianized features are obtained computing the inverse of cumulative feature r
 
 $$ y = \Phi^{-1} (r(x)) $$
 
-being r(x)$ the rank of a feature over the training set
+being r(x) the rank of a feature over the training set
 
 $$ r(x) = \cfrac{1}{N+2}\left(\sum^{N}_{i=0} X[x < x_i] + 1\right) $$
 
