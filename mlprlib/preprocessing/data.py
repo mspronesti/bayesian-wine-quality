@@ -91,10 +91,10 @@ def cumulative_feature_rank(X: np.ndarray, X_ref: np.ndarray = None):
             np.ndarray of shape (n_feats, n_samples)
 
         X_ref:
-            np.ndarray of shape
-                (n_feats, n_samples)
-            containing the set used as a reference.
-            If None, X is used.
+            np.ndarray of shape (n_feats, n_samples),
+            containing the set used to rank features
+            over. If None, features are ranked over
+            X itself.
             Default None
 
     Returns:
@@ -104,11 +104,12 @@ def cumulative_feature_rank(X: np.ndarray, X_ref: np.ndarray = None):
     transformed = np.empty([n_feats, n_samples])
 
     X_ref = X if X_ref is None else X_ref
+    _, N = X_ref.shape
     for i in range(n_samples):
         # compute rank applying the definition
         # 1. is a trick to cast it to a float
         # to avoid numerical errors with following division
         rank = 1. + (X[:, i].reshape([n_feats, 1]) < X_ref).sum(axis=1)
-        rank /= (n_samples + 2.)
+        rank /= (N + 2.)
         transformed[:, i] = norm.ppf(rank)
     return transformed
