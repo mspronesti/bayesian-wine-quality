@@ -18,19 +18,26 @@ class PCA(Transformer):
         self.n_components = n_components
         self.P = None
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None, *, use_svd: bool = False):
         """
         Fits the model given the training
         data X
 
         Parameters
         ----------
-        X: ndarray, training set
-        y: ndarray, training samples
+        X:
+            ndarray, training set
+        y:
+            Not used. Only kept for compatibility
+            with base class.
+
+        use_svd:
+            bool, whether to use the svd solver or not.
+            Default False.
 
         Returns
         -------
-         a fitted PCA instance
+            a fitted PCA instance
         """
         if self.n_components is None:
             n_components = X.shape[0] - 1
@@ -38,21 +45,28 @@ class PCA(Transformer):
             n_components = self.n_components
 
         cov = covariance_matrix(X)
-        _, eigenvectors = np.linalg.eig(cov)
+        if use_svd:
+            eigenvectors, _, _ = np.linalg.svd(cov)
+            self.P = eigenvectors[:, 0:n_components]
+        else:
+            _, eigenvectors = np.linalg.eigh(cov)
+            self.P = eigenvectors[:, ::-1][:, 0:n_components]
 
         # extract the top n_components eigenvectors
-        self.P = eigenvectors[:, ::-1][:, 0:n_components]
         return self
 
     def transform(self, X, y=None):
         """
         Transform the data with the P matrix
-        computed already
+        computed already, projecting to training
+        matrix.
 
         Parameters
         ----------
-        X: ndarray, data to be transformed
-        y: ignored
+        X:
+            ndarray, data to be transformed
+        y:
+            ignored
 
         Returns
         -------
