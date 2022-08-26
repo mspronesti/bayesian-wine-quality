@@ -2,6 +2,7 @@ from typing import Union
 
 import numpy as np
 from scipy.stats import norm
+from .._base import Transformer, NotFittedError
 
 
 def standardize(X: np.ndarray, mean: float = None, std: float = None):
@@ -113,3 +114,102 @@ def cumulative_feature_rank(X: np.ndarray, X_ref: np.ndarray = None):
         rank /= (N + 2.)
         transformed[:, i] = norm.ppf(rank)
     return transformed
+
+
+class StandardScaler(Transformer):
+    def __init__(self):
+        self.mean = None
+        self.std = None
+
+    def fit(self, X, y=None):
+        """
+        Fits the scaler with mean
+        and variance of data matrix X
+
+        Parameters
+        ----------
+        X: ndarray, data matrix of shape
+            (n_samples, n_features)
+
+        y: ignored
+
+        Returns
+        -------
+            fitted scaler
+        """
+        self.mean = X.mean(axis=0)
+        self.std = X.std(axis=0)
+        return self
+
+    def transform(self, X, y=None):
+        """
+        Standardizes given data using
+        mean and variance computed in
+        the fit method
+
+            z_score = (X - μ) / σ
+
+        Parameters
+        ----------
+        X:
+            ndarray, data to scale
+        y:
+            ignored
+
+        Returns
+        -------
+            transformed data
+        """
+        if self.mean is None or self.std is None:
+            raise NotFittedError("This StandardScaler is not"
+                                 "fitted yet. Call fit first.")
+        return standardize(X, self.mean, self.std)
+
+
+class GaussianScaler(Transformer):
+    """Gaussianize features computing the cumulative
+    feature rank"""
+    def __init__(self):
+        self.X_ref = None
+
+    def fit(self, X, y=None):
+        """
+        Fits the GaussianScaler.
+
+        Parameters
+        ----------
+        X:
+            ndarray, data matrix of shape
+            (n_samples, n_feats)
+        y:
+            ignored
+
+        Returns
+        -------
+            fitted GaussianScaler
+        """
+        self.X_ref = X.T
+        return self
+
+    def transform(self, X, y=None):
+        """
+        Gaussianised the given data using
+        the X_ref attributed computed when fitting
+        as reference.
+
+        Parameters
+        ----------
+        X:
+            ndarray, data of shape
+                (n_samples, n_features)
+        y:
+            ignored.
+
+        Returns
+        -------
+            gaussianised data
+        """
+        if self.X_ref is None:
+            raise NotFittedError("This GaussianScaler is not"
+                                 "fitted yet. Call fit first.")
+        return cumulative_feature_rank(X.T, self.X_ref).T
