@@ -7,6 +7,7 @@ all: report clean
 .PHONY: report
 report:
 	pdflatex $(LATEX_OPTS) $(MAIN_NAME).tex
+	pdflatex $(LATEX_OPTS) $(MAIN_NAME).tex
 
 .PHONY: clean
 clean:

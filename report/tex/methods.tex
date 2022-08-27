@@ -1,22 +1,110 @@
-		\section{Methods}
-Actualmente existen varios tipos de Barómetros. Según los fines del instituto o experimento a realizarse uno es ocupado o no, así mismo, la tecnología y el presupueto disponible, varía su construcción y manufactura. A continuación los nombramos:\\
+\section{Method}
+In this section we are going to first describe the approach followed towards model selection and model evaluation. Then, we will analyse the explored classification methods and the results they yielded.
+ 
+\subsection{Approach}
+In order to perform our analysis, we will adopt two approaches towards model selection:
+\begin{itemize}
+	\item single split: the training set is divided into two chunks, where the 80\% of the samples are used for fitting the classifer and the remaining 20\% for testing it. 
+	\item k-fold cross validation: the training set is split into $k$ folds, one of whom is used of testing and the other $k - 1$ for fitting the model. The process is repeated $k$ times. This approach usually makes the process of model selection more reliable as, one by one, all the chunks will be used as unseen data. 
+	For this specific application, we set $k = 5$, i.e. we used 5 folds.
+\end{itemize}
+In both cases, we make sure no transformation is applied on the whole training data before splitting it, not to introduce data leakages.  
+
+As regards model evalution, we want to be Bayesian and adopt the minimum of the normalized Bayesian risk as metric, which measures the cost we would pay if we made optimal decisions using the recognizer scores. The application of interest is a uniform prior one
+
+\begin{align*}
+	(\tilde{\pi}, C_{fp}, C_{fn}) = (0.5, 1, 1)
+\end{align*}
+
+being $\pi$ the (unbiased, in the specified case) prior, $C_{fp}, C_{fn}$ the cost of the false positive and false negative case, respectively.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Gaussian Classifiers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gaussian Classifiers}
+
+Gaussian classifiers are the first class of methods we take into considerations. In particular we analyse the performances yielded by a Multivariate Gaussian and a Naive Bayes, both with full and tied covariance, for a total of 4 classifiers.
+ 
+Table \ref{tab:gaus_res} shows the results obtained for these models both for the single split and for the k-fold cross validation.
+
+\noindent
+\begin{table}[H]
+\begin{tabular}{ p{2.5cm} p{2cm} p{1.5cm}  }
+	\hline
+	& \makecell{\textbf{Single split} \\ $\tilde{\pi} = 0.5$} & \makecell{\textbf{5-fold} \\ $\tilde{\pi} = 0.5$} \\
+	\hline
+	\multicolumn{3}{c}{Raw features} \\
+	\hline
+	Full-Cov & 0.00 &  0.00 \\
+	Diag-Cov & 0.00 & 0.00 \\
+	Tied Full-Cov & 0.00 & 0.00 \\
+	Tied Diag-Cov &  0.00 & 0.00 \\	
+	\hline
+	\multicolumn{3}{c}{Gaussianized features} \\
+	\hline
+	Full-Cov & 0.00 &  0.00 \\
+	Diag-Cov & 0.00 & 0.00 \\
+	Tied Full-Cov & 0.00 & 0.00 \\
+	Tied Diag-Cov &  0.00 & 0.00 \\	
+	\hline
+	\multicolumn{3}{c}{Gaussianized features, PCA(m=10)} \\
+	\hline
+	Full-Cov & 0.00 &  0.00 \\
+	Diag-Cov & 0.00 & 0.00 \\
+	Tied Full-Cov & 0.00 & 0.00 \\
+	Tied Diag-Cov &  0.00 & 0.00 \\	
+	\hline
+	\multicolumn{3}{c}{Gaussianized features, PCA(m=9)} \\
+	\hline
+	Full-Cov & 0.00 &  0.00 \\
+	Diag-Cov & 0.00 & 0.00 \\
+	Tied Full-Cov & 0.00 & 0.00 \\
+	Tied Diag-Cov &  0.00 & 0.00 \\	
+	\hline
+\end{tabular}
+\caption{min DFC for Gaussian models}
+\label{tab:gaus_res}
+\end{table}
 
 
-\begin{compactitem}
-	\item Barómetro de Mercurio:
-	Está formado por un tubo de vidrio de unos 850 mm de altura, cerrado por elextremo superior y abierto por el inferior. Cuando el tubo se llena de mercurio yse coloca el extremo abierto en un recipiente lleno del mismo líquido, el niveldel tubo cae hasta una altura de unos 760 mm por encima del nivel delrecipiente y deja un vacío casi perfecto en la parte superior del tubo, estando alnivel del mar y en condiciones normales. Las variaciones de la presiónatmosférica hacen que el líquido del tubo suba o baje ligeramente. La lecturade un barómetro de mercurio puede tener una precisión de hasta 0,1 mm.\\
-	
-	
-	\item Barómetro de Fortín:
-	Compuesto por un tubo de Torricelli que se introduce en el mercurio contenido en una cubeta de vidrio en forma tubular, provista de una base de piel de gamo cuya forma puede ser modificada por medio de un tornillo que se apoya en su centro y que, oportunamente girado, lleva el nivel del mercurio del cilindro a rozar la punta de un pequeño cono de marfil. Así se mantiene un nivel fijo.Este está completamente recubierto de latón, salvo dos ranuras verticales junto al tubo que permiten ver el nivel de mercurio. En la ranura frontal hay una graduación en milímetros y una escala de vernier (nonio) para la lectura de décimas de milímetros.Y en la posterior hay un pequeño espejo para facilitar la visibilidad del nivel.Los barómetros Fortin se usan en laboratorios científicos para las medidas de alta precisión.\\
-	
-	
-	\item Barómetro Aneroide:
-	Es un barómetro que no utiliza mercurio. Indica las variaciones de presión atmosférica por las deformaciones más o menos grandes que aquélla hace experimentar a una caja metálica de paredes muy elásticas en cuyo interior se ha hecho el vacío más absoluto. Se gradúa por comparación con un barómetro de mercurio pero sus indicaciones son cada vez más inexactas por causa de la variación de la elasticidad del resorte plástico. Fue inventado por Lucien Vidie en 1843 y es más grande, por lo tanto el barómetro que utiliza mercurio. El principio de funcionamiento es el cambio de tamaño de una cápsula parcialmente evacuada, construida para maximizar el cambio en una dimensión con los cambios en la presión del aire. Los cambios de la longitud de la cápsula se amplifican por medio de un brazo a un dial, que permite mostrar la presión.\\
-	\
-	\item Barómetro Holostérico 
-	Está formado por un recipiente aplanado, de superficies onduladas en el que se ha logrado una intensa rarefacción antes de cerrarlo; en una de las caras se apoya un resorte que, con las variaciones de presión atmosférica, hace mover un índice por medio de un juego de palancas.Es menos preciso que el Aneroide.
-	
-	
-	
-\end{compactitem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 		Logistic Regression
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Logistic Regression}
+
+In this section, we assess the performances of a Logistic Regression classifier, both with linear and quadratic kernel.
+
+Being classes unbalanced, their costs are rebalanced using a loss function accounting for the number of samples for each class, used as weights for the two terms deriving from the split of the summation of the original loss
+
+\begin{align*}
+	J(w, b) &= \cfrac{\lambda}{2} \|w\|^2 + \cfrac{\pi_T}{n_T} \sum_{i|c_i=1} log \ \sigma(y_i)^{-1} 
+	\\ &+ \cfrac{1 - \pi_T}{n_T} \sum^n_{i| c_i=0} log \ \sigma(y_i)^{-1} 
+\end{align*}
+being $\sigma$ the sigmoid function, $y_i$ the output of the model $y_i = - z_i (w^T x_i + b)$, $z_i$ a variable equalt to $\pm 1$ depending on the class, $w, b$ the parameters of the model. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 	    Support Vector Classifier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Support Vector Classifier}
+In this section, we test the performances of 
+different flavours of support vector classifiers. In particular, we are going to use a linear kernel, a quadratic polynomial kernel and a radial basis function kernel.
+
+As done for the previous class of models, we will also take into account the possibility of rebalancing the classes introducing an empirical prior $\pi_{T,emp}$ over the training set, thus using two different values of $C$ for the bad and good quality wines
+
+\begin{align*}
+	C_T = C \cfrac{\pi_T}{\pi_{T,emp}} \ \ \ \ \ \
+	C_F = C \cfrac{1 - \pi_T}{1 - \pi_{T,emp}} 
+\end{align*}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 		Gaussian Mixtures
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gaussian Mixture Models}
+Eventually, Gaussian Mixutres are the last type of classifier employed for this task, for which we expect to yield generally better results than Gaussian models, as GMMs can approximate generic distributions.
+
+We consider both full and diagonal covariance models, with and without covariance tying, where tying takes place at class level (i.e. different classes have different covariance matrices).

@@ -1,6 +1,8 @@
 \documentclass[twoside]{article}
 
-\usepackage{lipsum} % Package to generate dummy text throughout this template
+%\usepackage{graphics}
+\usepackage{graphicx}
+
 
 \usepackage[sc]{mathpazo} % Use the Palatino font
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
@@ -9,6 +11,11 @@
 
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
 \usepackage{multicol} % Used for the two-column layout of the document
+%\usepackage{nonfloat}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{amsmath}
+
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
 \usepackage{booktabs} % Horizontal rules in tables
 \usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
@@ -16,6 +23,9 @@
 
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
 \usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{makecell} %table cells
+\usepackage{booktabs} %table appearance
 
 \usepackage{abstract} % Allows abstract customization
 \renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
@@ -34,7 +44,7 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Wine Quality Prediction}} % Article title 
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Wine Quality Prediction on the UCI Wine Dataset}} % Article title 
 
 \author{
 	\large
