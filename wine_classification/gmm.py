@@ -12,11 +12,15 @@ from mlprlib.dataset import (
 )
 
 from mlprlib.model_selection import (
-    train_test_split,
-    KFold
+    CrossValidator
 )
 
-from mlprlib.preprocessing import standardize
+from mlprlib.preprocessing import (
+    standardize,
+    StandardScaler,
+    GaussianScaler
+)
+
 from mlprlib.metrics import min_detection_cost_fun
 
 from mlprlib.utils import Writer
@@ -25,21 +29,23 @@ from mlprlib.gaussian import GaussianMixture
 n_components_list = [2, 4, 8, 16]
 
 
-def k_fold_gmm(writer, cov_t: str, data_t: str, X, y):
-    # X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
-    for n_comp in tqdm(n_components_list, desc="Cov %s | Data %s" % (cov_t, data_t)):
-        scores = np.empty((0,), dtype=np.float64)
-        kf = KFold(n_folds, shuffle=False)
+def k_fold_gmm(writer, cov_t: str, data_t: str, X, y, gauss=True):
+    transformers = []
+    if gauss:
+        transformers.append(GaussianScaler())
+    else:
+        transformers.append(StandardScaler())
 
-        for idx_train, idx_test in kf.split(X):
-            X_train, X_val = X[idx_train], X[idx_test]
-            y_train, y_val = y[idx_train], y[idx_test]
+    progress_bar = tqdm(n_components_list)
+    for n_comp in progress_bar:
+        progress_bar.set_description(
+            "Cov %s | n_components %s | Data %s" % (cov_t, n_comp, data_t)
+        )
+        cv = CrossValidator(n_folds=n_folds)
+        gmm = GaussianMixture(n_components=n_comp, cov_type=cov_t)
+        cv.fit(X, y, gmm, transformers)
 
-            gmm = GaussianMixture(n_comp, cov_type=cov_t)
-            gmm.fit(X_train, y_train)
-            _, score = gmm.predict(X_val, return_proba=True)
-            scores = np.append(scores, score)
-
+        scores = cv.scores
         # evaluate minDCF
         min_dcf, _ = min_detection_cost_fun(scores, y)
         # gmm = GaussianMixture(n_comp, cov_type=cov_t)

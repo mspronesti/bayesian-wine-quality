@@ -60,7 +60,11 @@ def single_split_gauss(writer, models, X, y,
         X_train = pca.fit_transform(X_train)
         X_val = pca.transform(X_val)
 
-    for model in tqdm(models):
+    progress_bar = tqdm(models)
+    for model in progress_bar:
+        progress_bar.set_description(
+            "%s | single split" % type(model).__name__
+        )
         model.fit(X_train, y_train)
         _, score = model.predict(X_val, return_proba=True)
         min_dcf, _ = min_detection_cost_fun(score, y_val)
@@ -97,7 +101,11 @@ def k_fold_gauss(writer, models, X, y,
     if use_pca:
         transformers.append(PCA(n_components=n_components))
 
-    for model in tqdm(models):
+    progress_bar = tqdm(models)
+    for model in progress_bar:
+        progress_bar.set_description(
+            "%s | 5-fold cross val" % type(model).__name__
+        )
         cv.fit(X, y, model, transformers)
         # acquire the scores after cv
         scores = cv.scores
