@@ -2,54 +2,54 @@
 GMM Cov Type : Full
 ----------------
 Gaussianized data
-n_components: 2 | 0.318108
-n_components: 4 | 0.306688
-n_components: 8 | 0.297716
-n_components: 16 | 0.322186
+n_components: 2 | 0.328711
+n_components: 4 | 0.302610
+n_components: 8 | 0.296900
+n_components: 16 | 0.295269
 Standardized data
-n_components: 2 | 0.300979
-n_components: 4 | 0.306688
-n_components: 8 | 0.288744
-n_components: 16 | 0.299347
+n_components: 2 | 0.318108
+n_components: 4 | 0.288744
+n_components: 8 | 0.303426
+n_components: 16 | 0.303426
 
 ----------------
 GMM Cov Type : Diag 
 ----------------
 Gaussianized data
-n_components: 2 | 0.420881
-n_components: 4 | 0.305057
-n_components: 8 | 0.319739
-n_components: 16 | 0.300979
+n_components: 2 | 0.426591
+n_components: 4 | 0.302610
+n_components: 8 | 0.318923
+n_components: 16 | 0.309135
 Standardized data
-n_components: 2 | 0.452692
-n_components: 4 | 0.350734
-n_components: 8 | 0.336052
-n_components: 16 | 0.318108
+n_components: 2 | 0.420881
+n_components: 4 | 0.308320
+n_components: 8 | 0.326264
+n_components: 16 | 0.305873
 
 ----------------
 GMM Type : Full-Tied
 ----------------
 Gaussianized data
-n_components: 2 | 0.300979
-n_components: 4 | 0.305873
-n_components: 8 | 0.292007
-n_components: 16 | 0.301794
+n_components: 2 | 0.308320
+n_components: 4 | 0.318923
+n_components: 8 | 0.308320
+n_components: 16 | 0.292007
 Standardized data
-n_components: 2 | 0.312398
-n_components: 4 | 0.311582
-n_components: 8 | 0.314029
-n_components: 16 | 0.299347
+n_components: 2 | 0.300979
+n_components: 4 | 0.307504
+n_components: 8 | 0.291191
+n_components: 16 | 0.287928
 
 ----------------
 GMM Type : Diag-Tied
 ----------------
 Gaussianized data
-n_components: 2 | 0.436378
-n_components: 4 | 0.327896
-n_components: 8 | 0.331974
-n_components: 16 | 0.317292
+n_components: 2 | 0.438010
+n_components: 4 | 0.324633
+n_components: 8 | 0.335237
+n_components: 16 | 0.323002
 Standardized data
-n_components: 2 | 0.429038
-n_components: 4 | 0.374388
-n_components: 8 | 0.316476
-n_components: 16 | 0.310767
+n_components: 2 | 0.438010
+n_components: 4 | 0.329527
+n_components: 8 | 0.333605
+n_components: 16 | 0.309135

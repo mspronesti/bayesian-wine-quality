@@ -4,19 +4,24 @@ In this section we are going to first describe the approach followed towards mod
 \subsection{Approach}
 In order to perform our analysis, we will adopt two approaches towards model selection:
 \begin{itemize}
-	\item single split: the training set is divided into two chunks, where the 80\% of the samples are used for fitting the classifer and the remaining 20\% for testing it. 
-	\item k-fold cross validation: the training set is split into $k$ folds, one of whom is used of testing and the other $k - 1$ for fitting the model. The process is repeated $k$ times. This approach usually makes the process of model selection more reliable as, one by one, all the chunks will be used as unseen data. 
-	For this specific application, we set $k = 5$, i.e. we used 5 folds.
+	\item \textbf{single split}: the training set is divided into two chunks, where the 80\% of the samples are used for fitting the classifer and the remaining 20\% for testing it. 
+	\item \textbf{k-fold cross validation}: the training set is split into $k$ folds, one of whom is used for validation and the other $k - 1$ for fitting the model. The process is repeated $k$ times. This approach usually makes the process of model selection more reliable as, one by one, all the chunks will be used as unseen data. 
+	For this specific application, we set $k = 5$, i.e. we used 5 folds. 
 \end{itemize}
-In both cases, we make sure no transformation is applied on the whole training data before splitting it, not to introduce data leakages.  
+In both cases, we make sure no transformation is applied on the whole training data before splitting it, \textbf{not} to \textbf{bias} the validation and introduce \textbf{data leakages}.  
 
 As regards model evalution, we want to be Bayesian and adopt the minimum of the normalized Bayesian risk as metric, which measures the cost we would pay if we made optimal decisions using the recognizer scores. The application of interest is a uniform prior one
-
 \begin{align*}
 	(\tilde{\pi}, C_{fp}, C_{fn}) = (0.5, 1, 1)
 \end{align*}
 
-being $\pi$ the (unbiased, in the specified case) prior, $C_{fp}, C_{fn}$ the cost of the false positive and false negative case, respectively.
+being $\tilde{\pi}$ the (unbiased, in the specified case) prior, $C_{fp}, C_{fn}$ the costs of the false positive and false negative case, respectively.
+
+%Additionally, we also consider biased cases towards one of the qualities
+%\begin{align*}
+%	(\tilde{\pi}, C_{fp}, C_{fn}) = (0.1, 1, 1) \\
+%	(\tilde{\pi}, C_{fp}, C_{fn}) = (0.9, 1, 1)
+%\end{align*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Gaussian Classifiers
@@ -25,47 +30,52 @@ being $\pi$ the (unbiased, in the specified case) prior, $C_{fp}, C_{fn}$ the co
 
 Gaussian classifiers are the first class of methods we take into considerations. In particular we analyse the performances yielded by a Multivariate Gaussian and a Naive Bayes, both with full and tied covariance, for a total of 4 classifiers.
  
-Table \ref{tab:gaus_res} shows the results obtained for these models both for the single split and for the k-fold cross validation.
+Table \ref{tab:gaus_res} shows the results obtained for these models both for the single split and for the k-fold cross validation on raw and gaussianized data and applying a principal component analysis.
 
 \noindent
 \begin{table}[H]
 \begin{tabular}{ p{2.5cm} p{2cm} p{1.5cm}  }
 	\hline
+	\hline
 	& \makecell{\textbf{Single split} \\ $\tilde{\pi} = 0.5$} & \makecell{\textbf{5-fold} \\ $\tilde{\pi} = 0.5$} \\
 	\hline
 	\multicolumn{3}{c}{Raw features} \\
 	\hline
-	Full-Cov & 0.00 &  0.00 \\
-	Diag-Cov & 0.00 & 0.00 \\
-	Tied Full-Cov & 0.00 & 0.00 \\
-	Tied Diag-Cov &  0.00 & 0.00 \\	
+	Full-Cov & 0.264 &  0.312 \\
+	Diag-Cov & 0.409 & 0.420 \\
+	Tied Full-Cov & 0.327 & 0.333 \\
+	Tied Diag-Cov &  0.391 & 0.403 \\	
 	\hline
 	\multicolumn{3}{c}{Gaussianized features} \\
 	\hline
-	Full-Cov & 0.00 &  0.00 \\
-	Diag-Cov & 0.00 & 0.00 \\
-	Tied Full-Cov & 0.00 & 0.00 \\
-	Tied Diag-Cov &  0.00 & 0.00 \\	
+	Full-Cov &  \boxit{blue}{1.3in}0.255 &  0.301 \\
+	Diag-Cov & 0.460 & 0.440 \\
+	Tied Full-Cov & 0.344 & 0.347 \\
+	Tied Diag-Cov &  0.441 & 0.441 \\	
 	\hline
 	\multicolumn{3}{c}{Gaussianized features, PCA(m=10)} \\
 	\hline
-	Full-Cov & 0.00 &  0.00 \\
-	Diag-Cov & 0.00 & 0.00 \\
-	Tied Full-Cov & 0.00 & 0.00 \\
-	Tied Diag-Cov &  0.00 & 0.00 \\	
+	Full-Cov & \boxit{red}{1.3in}0.242 & 0.289 \\
+	Diag-Cov & 0.372 & 0.385 \\
+	Tied Full-Cov & 0.359 & 0.352 \\
+	Tied Diag-Cov &  0.362 & 0.350 \\	
 	\hline
 	\multicolumn{3}{c}{Gaussianized features, PCA(m=9)} \\
 	\hline
-	Full-Cov & 0.00 &  0.00 \\
-	Diag-Cov & 0.00 & 0.00 \\
-	Tied Full-Cov & 0.00 & 0.00 \\
-	Tied Diag-Cov &  0.00 & 0.00 \\	
+	Full-Cov & 0.254 &  0.304 \\
+	Diag-Cov & 0.384 & 0.392 \\
+	Tied Full-Cov & 0.361 & 0.351 \\
+	Tied Diag-Cov &  0.361 & 0.354 \\	
 	\hline
 \end{tabular}
-\caption{min DFC for Gaussian models}
+\caption{min DCF for Gaussian models}
 \label{tab:gaus_res}
 \end{table}
+We notice that the full-covariance Multivariate Gaussian classifier yields the better performances, both with and without PCA. In particular, the dimensionality reduction is beneficial when applyied with 10 components and doesn't degrade the performances with 9.
 
+This suggests the dataset is large enough to estimate a covariance matrix for each class and loosening our assumptions (introducing diagonalization or tying) is not needed. This is furtherly suggested by the fact that the diagonal covariance models yield the worst results, as the uncorrelation hypotesis does not hold.
+
+Eventually, it should be noted that, as expected, gaussianization improves the performances with respect to raw data. The results obtained for the single split and 5-fold are consistent to one another, conveying that, in this specific scenario, the size of our training set is appropriate even for a single fold evaluation (i.e. a single split).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 		Logistic Regression
@@ -80,26 +90,128 @@ Being classes unbalanced, their costs are rebalanced using a loss function accou
 	J(w, b) &= \cfrac{\lambda}{2} \|w\|^2 + \cfrac{\pi_T}{n_T} \sum_{i|c_i=1} log \ \sigma(y_i)^{-1} 
 	\\ &+ \cfrac{1 - \pi_T}{n_T} \sum^n_{i| c_i=0} log \ \sigma(y_i)^{-1} 
 \end{align*}
-being $\sigma$ the sigmoid function, $y_i$ the output of the model $y_i = - z_i (w^T x_i + b)$, $z_i$ a variable equalt to $\pm 1$ depending on the class, $w, b$ the parameters of the model. 
+being $\sigma(.)$ the sigmoid function, $y_i$ the output of the model $y_i = - z_i (w^T x_i + b)$, $z_i$ a variable equal to $\pm 1$ depending on the class, $w, b$ the parameters of the model. 
+
+The most significant results obtained for both the models on a grid search on $\lambda$ are shown in Table \ref{tab:lr_res}, while a complete visualization is shown in Figure \ref{fig:lr_plot}.
+\noindent
+\begin{table}[H]
+	\hspace{-.2cm}
+	\begin{tabular}{ p{3.15cm} p{2cm} p{1.5cm}  }
+		\hline
+		\hline
+		& \makecell{\textbf{Single split} \\ $\tilde{\pi} = 0.5$} & \makecell{\textbf{5-fold} \\ $\tilde{\pi} = 0.5$} \\
+		\hline
+		\multicolumn{3}{c}{Raw features} \\
+		\hline
+		Log-Reg ($\lambda=10^{-4}$) & 0.352 & 0.363 \\
+		Quad-LR ($\lambda=0$)       & 1.000 & 1.000\\
+		\hline
+		\multicolumn{3}{c}{Z-normalized features} \\
+		\hline
+		Log-Reg($\lambda=10^{-2}$)& 0.353 & 0.344 \\
+		Quad-LR($\lambda=0$) & \boxit{red}{1.3in}0.237 &  0.274 \\	
+		\hline
+		\multicolumn{3}{c}{Gaussianized features} \\
+		\hline
+		Log-Reg($\lambda=0$) & 0.335 & 0.356 \\
+		Quad-LR($\lambda=10^{-2}$) & 0.256 & 0.294  \\	
+		\hline
+		\multicolumn{3}{c}{Z-normalized features, PCA(m=10)} \\
+		\hline
+		Log-Reg($\lambda=10^{-2}$) & 0.353 & 0.341  \\
+		Quad-LR($\lambda=0$) 	   & 0.243 & 0.284 \\	
+		\hline
+	\end{tabular}
+	\caption{min DCF for Logistic Regression models}
+	\label{tab:lr_res}
+\end{table}
+
+Differently from the previous case, Gaussianization doesn't prove this helpful, however standardizing data improved the performances. On the other hand, PCA does not bring any advantage, though it dosn't prove detrimental.
+
+Overall, among the different values of $\lambda$ and the two models in the 3 different scenario analysed, the quadratic logistic regression with $\lambda=0$ yields the best results. In fact, quadratic models are characterized by a "curved" surface, which usually allow to better describe and learn the real distribution of the data, without overfitting.
+
+% PUT PLOTS HERE
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 	    Support Vector Classifier
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     Support Vector Classifier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Support Vector Classifier}
 In this section, we test the performances of 
-different flavours of support vector classifiers. In particular, we are going to use a linear kernel, a quadratic polynomial kernel and a radial basis function kernel.
+different flavours of support vector classifiers. In particular, we are going to use a linear kernel, a quadratic polynomial kernel and a radial basis function (RBF) kernel.
 
-As done for the previous class of models, we will also take into account the possibility of rebalancing the classes introducing an empirical prior $\pi_{T,emp}$ over the training set, thus using two different values of $C$ for the bad and good quality wines
+\noindent
+\begin{table}[H]
+	\hspace{-.3cm}
+	\begin{tabular}{ p{3cm} p{1.9cm} p{1.4cm}  }
+		\hline
+		\hline
+		& \makecell{\textbf{Single split} \\ $\tilde{\pi} = 0.5$} & \makecell{\textbf{5-fold} \\ $\tilde{\pi} = 0.5$} \\
+		\hline
+		\multicolumn{3}{c}{Raw features} \\
+		\hline
+		SVC($C=0.1$) & 0.816 & 0.760\\
+		SVC($C=0.1, \pi^{emp}_T$) & 0.695 &  0.920\\
+		\hline
+		\multicolumn{3}{c}{Z-normalized features} \\
+		\hline
+		SVC($C=1$)   &\boxit{red}{1.3in} 0.334 & 0.341 \\
+		SVC($C=0.1, \pi^{emp}_T$) & 0.338 & 0.348 \\
+		\hline
+		\multicolumn{3}{c}{Gaussianized features} \\
+		\hline
+		SVC($C=0.1$) & 0.339 & 0.350 \\
+		SVC($C=0.1, \pi^{emp}_T$) & 0.352 & 0.360\\		
+		\hline
+	\end{tabular}
+	\caption{min DCF for Support Vector Classifier models, with and without feature balancing.}
+	\label{tab:svc_res}
+\end{table}
+
+As done for the previous class of models, we will also take into account the possibility of rebalancing the classes introducing an empirical prior $\pi^{emp}_{T}$ over the training set, thus using two different values of $C$ for the bad and good quality wines
 
 \begin{align*}
 	C_T = C \cfrac{\pi_T}{\pi_{T,emp}} \ \ \ \ \ \
 	C_F = C \cfrac{1 - \pi_T}{1 - \pi_{T,emp}} 
 \end{align*}
+We will first conduct our analysis emplying the linear SVC, even if we already discussed above how these class of models is not appropriate for our classification task.
+ 
+The best results obtained for the linear kernel are reported in Table \ref{tab:svc_res}, where we specified $\pi^{emp}_T$ where we balanced the features using the empirical prior. We observe how standardization improved greatly the results with respect to the raw case, where we obtain high values of minDCF both for the single split and 5-fold cross validation approach. Gaussianization and features balancing don't prove advantageous 
 
+A further analysis is, now, conducted using a polynomial kernel of grade 2 (quadratic) and a radial base function (RBF) kernel. We tune again $C$ for both the cases and for the RBF kernel we perform a grid search involving $\gamma$ as well, to select the best hypermameters. Overall, we try the following values:
+\begin{align*}
+	C = \{10^{-1}, \ 1, \ 10\} \\
+	\gamma = \{1/e, \ 1/e^2\} \\
+	\pi_T = \{0.5, \ \pi^{emp}_T\}
+\end{align*}
+Place notice that $\pi_T$ is included above, even if it's not an hyperparameter, only to convey the idea that we're searching the best combination of parameters and, at the same time, assess the benefits of rebalancing features, if any. A visualization of the grid is shown in Figure \ref{fig:svc_plots}.
 
+%% PLOTS here
+
+We can notice that, for the RBF SVC, we obtain similar results regardless of features balancing. Therefore, balancing is not beneficial nor detrimental in our specific case. Table \ref{tab:best_svc_res} shows the results of the 2nd degree polynomial kernel and RBF kernel for the best choices of the hyperparameters, both with and without balancing.
+
+\noindent
+\begin{table}[H]
+	\hspace{-.5cm}
+	\begin{tabular}{ p{4.6cm} p{1.9cm} p{1.2cm}  }
+		\hline
+		\hline
+		& \makecell{\textbf{Single split} \\ $\tilde{\pi} = 0.5$} & \makecell{\textbf{5-fold} \\ $\tilde{\pi} = 0.5$} \\
+		\hline
+		
+		\multicolumn{3}{c}{Z-normalized features} \\
+		\hline
+		Poly-SVC($C=1$)  & 0.208 & 0.275 \\
+		Poly-SVC($C=0.1$) & 0.234 & 0.272 \\	
+		RBF-SVC($C=10, log\gamma=-2$) & \boxit{red}{.35in}0.140 & 0.225 \\
+		RBF-SVC($C=10, log\gamma=-2$) & 0.160 & \boxit{red}{.35in}0.223 \\
+		\hline
+	\end{tabular}
+	\caption{min DCF for Support Vector Classifier models, with and without feature balancing.}
+	\label{tab:best_svc_res}
+\end{table}
+
+Overall, the RBF kernel yields the best results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 		Gaussian Mixtures
@@ -107,4 +219,16 @@ As done for the previous class of models, we will also take into account the pos
 \subsection{Gaussian Mixture Models}
 Eventually, Gaussian Mixutres are the last type of classifier employed for this task, for which we expect to yield generally better results than Gaussian models, as GMMs can approximate generic distributions.
 
-We consider both full and diagonal covariance models, with and without covariance tying, where tying takes place at class level (i.e. different classes have different covariance matrices).
+We consider both full and diagonal covariance models, with and without covariance tying, where tying takes place at class level (i.e. different classes have different covariance matrices) for a total of 4 models. The best number of components is selected via cross-validation on gaussianized and standardized features.
+
+
+\subsection{Model selection}
+At the end of our preliminary analysis, we can conclude that the Support Vector Classifier with an RBF kernel having $log\gamma = -2$, applied to standardized features yields the best performances. 
+
+However, the Quadratic Logistic Regression and the Gaussian Mixture with 8 components - both applied to standardized features - performed well. Therefore, we will mainly take these into account in the following analysis for the evaluation.
+To sum up, here's are our best choices:
+\begin{itemize}
+	\item GMM(n\_components=8)
+	\item Quad-LR ($\lambda=0$)
+	\item RBF SVC($log \gamma=-2$)
+\end{itemize}

@@ -11,10 +11,10 @@ model: TiedNaiveBayes 	| dcf: 0.390711
 ----------------
 5 fold cross validation
 ----------------
-model: GaussianClassifier 	| dcf: 0.411909
-model: NaiveBayes 	| dcf: 0.453507
-model: TiedGaussian 	| dcf: 0.348287
-model: TiedNaiveBayes 	| dcf: 0.415987
+model: GaussianClassifier 	| dcf: 0.311582
+model: NaiveBayes 	| dcf: 0.419250
+model: TiedGaussian 	| dcf: 0.333605
+model: TiedNaiveBayes 	| dcf: 0.402121
 
 ----------------
 Gaussian data
@@ -29,10 +29,10 @@ model: TiedNaiveBayes 	| dcf: 0.440835
 ----------------
 5 fold cross validation
 ----------------
-model: GaussianClassifier 	| dcf: 0.414356
-model: NaiveBayes 	| dcf: 0.492659
-model: TiedGaussian 	| dcf: 0.390701
-model: TiedNaiveBayes 	| dcf: 0.476346
+model: GaussianClassifier 	| dcf: 0.300979
+model: NaiveBayes 	| dcf: 0.439641
+model: TiedGaussian 	| dcf: 0.348287
+model: TiedNaiveBayes 	| dcf: 0.442088
 
 ----------------
 Gaussian data, PCA(n_components=10)
@@ -47,10 +47,10 @@ model: TiedNaiveBayes 	| dcf: 0.362175
 ----------------
 5 fold cross validation
 ----------------
-model: GaussianClassifier 	| dcf: 0.406199
-model: NaiveBayes 	| dcf: 0.469821
-model: TiedGaussian 	| dcf: 0.389886
-model: TiedNaiveBayes 	| dcf: 0.398042
+model: GaussianClassifier 	| dcf: 0.289560
+model: NaiveBayes 	| dcf: 0.389070
+model: TiedGaussian 	| dcf: 0.352365
+model: TiedNaiveBayes 	| dcf: 0.351550
 
 ----------------
 Gaussian data, PCA(n_components=9)
@@ -65,7 +65,7 @@ model: TiedNaiveBayes 	| dcf: 0.361017
 ----------------
 5 fold cross validation
 ----------------
-model: GaussianClassifier 	| dcf: 0.404568
-model: NaiveBayes 	| dcf: 0.475530
-model: TiedGaussian 	| dcf: 0.388254
-model: TiedNaiveBayes 	| dcf: 0.395595
+model: GaussianClassifier 	| dcf: 0.304241
+model: NaiveBayes 	| dcf: 0.392333
+model: TiedGaussian 	| dcf: 0.351550
+model: TiedNaiveBayes 	| dcf: 0.353181

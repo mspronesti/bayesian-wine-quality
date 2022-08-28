@@ -33,11 +33,22 @@
 
 \usepackage{titlesec} % Allows customization of titles
 \usepackage[utf8]{inputenc}
-\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
-\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+
+\renewcommand{\thesection}{\Roman{section}} 
+\renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
+
+
 \titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
 \titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
 
+
+%%%%%%%%%%%%%%%%%%
+%%% Table Box 
+
+\def\boxit#1#2{%
+	\smash{\color{#1}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+		\llap{\rlap{\fbox{\vphantom{0}\makebox[#2]{}}}~}}\ignorespaces
+}
 
 
 %----------------------------------------------------------------------------------------

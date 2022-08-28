@@ -1,20 +1,48 @@
+----------------
 LR Type : linear
 ----------------
 Raw data
+----------------
+ Single split 
+----------------
 lambda: 0 | 0.366670
 lambda: 1e-06 | 0.366670
 lambda: 0.0001 | 0.372459
 lambda: 0.01 | 0.377601
 lambda: 1 | 0.392379
 lambda: 100 | 0.743045
+----------------
+5 fold cross validation
+----------------
+lambda: 0 | 0.356444
+lambda: 1e-06 | 0.357259
+lambda: 0.0001 | 0.354812
+lambda: 0.01 | 0.399674
+lambda: 1 | 0.459217
+lambda: 100 | 0.801794
 Gaussianized data
+----------------
+ Single split 
+----------------
 lambda: 0 | 0.334798
 lambda: 1e-06 | 0.334798
 lambda: 0.0001 | 0.335376
 lambda: 0.01 | 0.353628
 lambda: 1 | 0.419689
 lambda: 100 | 0.454966
+----------------
+5 fold cross validation
+----------------
+lambda: 0 | 0.353997
+lambda: 1e-06 | 0.353997
+lambda: 0.0001 | 0.353181
+lambda: 0.01 | 0.358891
+lambda: 1 | 0.425775
+lambda: 100 | 0.454323
 Standardized data
+----------------
+ Single split 
+----------------
 lambda: 0 | 0.366091
 lambda: 1e-06 | 0.366091
 lambda: 0.0001 | 0.366091
@@ -22,9 +50,31 @@ lambda: 0.01 | 0.353049
 lambda: 1 | 0.370211
 lambda: 100 | 0.391290
 ----------------
+5 fold cross validation
+----------------
+lambda: 0 | 0.355628
+lambda: 1e-06 | 0.355628
+lambda: 0.0001 | 0.355628
+lambda: 0.01 | 0.343393
+lambda: 1 | 0.393964
+lambda: 100 | 0.417618
+
+----------------
 LR type : quadratic
 ----------------
 Raw data
+----------------
+ Single split 
+----------------
+lambda: 0 | 1.000000
+lambda: 1e-06 | 1.000000
+lambda: 0.0001 | 1.000000
+lambda: 0.01 | 1.000000
+lambda: 1 | 1.000000
+lambda: 100 | 1.000000
+----------------
+5 fold cross validation
+----------------
 lambda: 0 | 1.000000
 lambda: 1e-06 | 1.000000
 lambda: 0.0001 | 1.000000
@@ -32,16 +82,40 @@ lambda: 0.01 | 1.000000
 lambda: 1 | 1.000000
 lambda: 100 | 1.000000
 Gaussianized data
+----------------
+ Single split 
+----------------
 lambda: 0 | 0.248306
 lambda: 1e-06 | 0.248306
 lambda: 0.0001 | 0.248306
 lambda: 0.01 | 0.255627
 lambda: 1 | 0.283073
 lambda: 100 | 0.429462
+----------------
+5 fold cross validation
+----------------
+lambda: 0 | 0.299347
+lambda: 1e-06 | 0.298532
+lambda: 0.0001 | 0.296085
+lambda: 0.01 | 0.289560
+lambda: 1 | 0.340131
+lambda: 100 | 0.434747
 Standardized data
+----------------
+ Single split 
+----------------
 lambda: 0 | 0.237443
 lambda: 1e-06 | 0.237443
 lambda: 0.0001 | 0.232949
 lambda: 0.01 | 0.236933
 lambda: 1 | 0.336602
 lambda: 100 | 0.427146
+----------------
+5 fold cross validation
+----------------
+lambda: 0 | 0.274878
+lambda: 1e-06 | 0.274062
+lambda: 0.0001 | 0.275693
+lambda: 0.01 | 0.277325
+lambda: 1 | 0.367863
+lambda: 100 | 0.463295
