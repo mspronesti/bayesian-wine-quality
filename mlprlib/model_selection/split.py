@@ -41,7 +41,7 @@ def train_test_split(X, y, test_size: float = .25, seed: int = 0):
 def k_fold_indices(X,
                    n_folds: int = 5,
                    *,
-                   shuffle: bool = False,
+                   shuffle: bool = True,
                    seed: int = 0):
     """
     Retrieves the indices for the K-fold
@@ -79,15 +79,21 @@ def k_fold_indices(X,
             " got n_splits=%s." % n_folds
         )
 
+    n_samples, _ = X.shape
     if shuffle:
         np.random.seed(seed)
-        idx = np.random.permutation(X.shape[0])
+        indices = np.random.permutation(n_samples)
     else:
-        idx = np.arange(X.shape[0])
+        indices = np.arange(n_samples)
+
     # split indices in n_folds groups
-    # (almost) equally
-    chunks = np.array_split(idx, n_folds)
+    # of (almost) equal size, where the remainder
+    # of the division is redistributed on the other
+    # folds so that the difference among folds is
+    # at most of 1 sample
+    chunks = np.array_split(indices, n_folds)
     for i in range(n_folds):
+        # generate the train and test indices
         yield (
             np.hstack([chunks[j] for j in range(n_folds) if j != i]),
             chunks[i]
@@ -97,7 +103,7 @@ def k_fold_indices(X,
 def k_fold_split(X, y,
                  n_folds: int = 5,
                  *,
-                 shuffle: bool = False,
+                 shuffle: bool = True,
                  seed: int = 0):
     """
     Splits the input dataset in `n_folds` splits
@@ -173,7 +179,7 @@ class KFold:
     def __init__(self,
                  n_folds: int = 5,
                  *,
-                 shuffle: bool = False,
+                 shuffle: bool = True,
                  seed: int = 0
                  ):
         """
@@ -217,7 +223,8 @@ class KFold:
 
         Returns
         -------
-
+            a generator of data samples and labels
+            split into `n_folds`
         """
         return k_fold_indices(X,
                               self.n_folds,

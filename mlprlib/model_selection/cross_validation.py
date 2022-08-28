@@ -26,7 +26,7 @@ class CrossValidator:
             model: Estimator,
             transformers: List[Transformer] = None,
             *,
-            shuffle: bool = False,
+            shuffle: bool = True,
             seed: int = 0):
         """
         Fits the cross validator.
@@ -63,7 +63,7 @@ class CrossValidator:
 
         """
 
-        scores = np.empty((0,))
+        scores = np.zeros([X.shape[0], ])
 
         kfold = KFold(n_folds=self.n_folds, shuffle=shuffle, seed=seed)
         for idx_train, idx_test in kfold.split(X):
@@ -85,7 +85,7 @@ class CrossValidator:
             # now fit
             model.fit(X_train, y_train)
             _, score = model.predict(X_test, return_proba=True)
-            scores = np.append(scores, score)
+            scores[idx_test] = score
 
         self._scores = scores
 
