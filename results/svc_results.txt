@@ -1,30 +1,122 @@
-Train-Test Split
-----------------
-kernel : linear
+kernel: linear
 ----------------
 Raw data
-C: 0.1 | 0.760343
-C: 1.0 | 0.738925
-C: 10.0 | 0.776348
+Single Split
+----------------
+C: 0.1 | 0.760343 | balance False
+C: 0.1 | 0.919501 | balance True
+C: 1.0 | 0.738925 | balance False
+C: 1.0 | 0.673579 | balance True
+C: 10.0 | 0.776348 | balance False
+C: 10.0 | 0.815201 | balance True
+5-fold cross validation
+----------------
+C: 0.1 | 0.681077 | balance False
+C: 0.1 | 0.695759 | balance True
+C: 1.0 | 0.863785 | balance False
+C: 1.0 | 0.851550 | balance True
+C: 10.0 | 0.885808 | balance False
+C: 10.0 | 0.916803 | balance True
+
 Gaussianized data
-C: 0.1 | 0.349644
-C: 1.0 | 0.341676
-C: 10.0 | 0.350223
+Single Split
+----------------
+C: 0.1 | 0.760343 | balance False
+C: 0.1 | 0.919501 | balance True
+C: 1.0 | 0.738925 | balance False
+C: 1.0 | 0.673579 | balance True
+C: 10.0 | 0.776348 | balance False
+C: 10.0 | 0.815201 | balance True
+5-fold cross validation
+----------------
+C: 0.1 | 0.339315 | balance False
+C: 0.1 | 0.351550 | balance True
+C: 1.0 | 0.341762 | balance False
+C: 1.0 | 0.351550 | balance True
+C: 10.0 | 0.338499 | balance False
+C: 10.0 | 0.356444 | balance True
+
 Standardized data
-C: 0.1 | 0.349065
-C: 1.0 | 0.341097
-C: 10.0 | 0.352470
+Single Split
 ----------------
-kernel : poly
+C: 0.1 | 0.760343 | balance False
+C: 0.1 | 0.919501 | balance True
+C: 1.0 | 0.738925 | balance False
+C: 1.0 | 0.673579 | balance True
+C: 10.0 | 0.776348 | balance False
+C: 10.0 | 0.815201 | balance True
+5-fold cross validation
+----------------
+C: 0.1 | 0.337684 | balance False
+C: 0.1 | 0.340131 | balance True
+C: 1.0 | 0.332790 | balance False
+C: 1.0 | 0.344209 | balance True
+C: 10.0 | 0.329527 | balance False
+C: 10.0 | 0.342577 | balance True
+
+
+----------------
+kernel : poly (degree=2)
 ----------------
 Standardized data
-C: 0.1 | 0.233459
-C: 1.0 | 0.207886
-C: 10.0 | 0.210713
+Single Split
 ----------------
-kernel : RBF
+C: 0.1 | 0.233459 | balance False
+C: 0.1 | 0.234038 | balance True
+C: 1.0 | 0.207886 | balance False
+C: 1.0 | 0.216365 | balance True
+C: 10.0 | 0.210713 | balance False
+C: 10.0 | 0.234617 | balance True
+5-fold cross validation
+----------------
+C: 0.1 | 0.275693 | balance False
+C: 0.1 | 0.272431 | balance True
+C: 1.0 | 0.272431 | balance False
+C: 1.0 | 0.274062 | balance True
+C: 10.0 | 0.277325 | balance False
+C: 10.0 | 0.277325 | balance True
+
+
+----------------
+kernel : RBF (log gamma = -1)
 ----------------
 Standardized data
-C: 0.1 | 0.286478
-C: 1.0 | 0.216944
-C: 10.0 | 0.177104
+Single Split
+----------------
+C: 0.1 | 0.267068 | balance False
+C: 0.1 | 0.264753 | balance True
+C: 1.0 | 0.168625 | balance False
+C: 1.0 | 0.178772 | balance True
+C: 10.0 | 0.134437 | balance False
+C: 10.0 | 0.138421 | balance True
+5-fold cross validation
+----------------
+C: 0.1 | 0.286297 | balance False
+C: 0.1 | 0.288744 | balance True
+C: 1.0 | 0.225122 | balance False
+C: 1.0 | 0.234910 | balance True
+C: 10.0 | 0.234910 | balance False
+C: 10.0 | 0.234910 | balance True
+
+
+----------------
+kernel : RBF (log gamma = -2)
+----------------
+
+Standardized data
+Single Split
+----------------
+C: 0.1 | 0.286478 | balance False
+C: 0.1 | 0.270542 | balance True
+C: 1.0 | 0.216944 | balance False
+C: 1.0 | 0.211292 | balance True
+C: 10.0 | 0.177104 | balance False
+C: 10.0 | 0.189635 | balance True
+5-fold cross validation
+----------------
+C: 0.1 | 0.296085 | balance False
+C: 0.1 | 0.292822 | balance True
+C: 1.0 | 0.256117 | balance False
+C: 1.0 | 0.253670 | balance True
+C: 10.0 | 0.214519 | balance False
+C: 10.0 | 0.222675 | balance True

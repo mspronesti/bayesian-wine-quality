@@ -7,6 +7,7 @@ In order to perform our analysis, we will adopt two approaches towards model sel
 	\item \textbf{single split}: the training set is divided into two chunks, where the 80\% of the samples are used for fitting the classifer and the remaining 20\% for testing it. 
 	\item \textbf{k-fold cross validation}: the training set is split into $k$ folds, one of whom is used for validation and the other $k - 1$ for fitting the model. The process is repeated $k$ times. This approach usually makes the process of model selection more reliable as, one by one, all the chunks will be used as unseen data. 
 	For this specific application, we set $k = 5$, i.e. we used 5 folds. 
+	
 \end{itemize}
 In both cases, we make sure no transformation is applied on the whole training data before splitting it, \textbf{not} to \textbf{bias} the validation and introduce \textbf{data leakages}.  
 
@@ -169,12 +170,11 @@ different flavours of support vector classifiers. In particular, we are going to
 \end{table}
 
 As done for the previous class of models, we will also take into account the possibility of rebalancing the classes introducing an empirical prior $\pi^{emp}_{T}$ over the training set, thus using two different values of $C$ for the bad and good quality wines
-
 \begin{align*}
-	C_T = C \cfrac{\pi_T}{\pi_{T,emp}} \ \ \ \ \ \
-	C_F = C \cfrac{1 - \pi_T}{1 - \pi_{T,emp}} 
+	C_T = C \cfrac{\pi_T}{\pi^{emp}_{T}} \ \ \ \ \ \
+	C_F = C \cfrac{1 - \pi_T}{1 - \pi^{emp}_{T}} 
 \end{align*}
-We will first conduct our analysis emplying the linear SVC, even if we already discussed above how these class of models is not appropriate for our classification task.
+We will first conduct our analysis emplying the linear SVC, even if we already discussed above that linear models don't perform that good for our classification task.
  
 The best results obtained for the linear kernel are reported in Table \ref{tab:svc_res}, where we specified $\pi^{emp}_T$ where we balanced the features using the empirical prior. We observe how standardization improved greatly the results with respect to the raw case, where we obtain high values of minDCF both for the single split and 5-fold cross validation approach. Gaussianization and features balancing don't prove advantageous 
 
@@ -221,6 +221,33 @@ Eventually, Gaussian Mixutres are the last type of classifier employed for this 
 
 We consider both full and diagonal covariance models, with and without covariance tying, where tying takes place at class level (i.e. different classes have different covariance matrices) for a total of 4 models. The best number of components is selected via cross-validation on gaussianized and standardized features.
 
+\noindent
+\begin{table}[H]
+	\begin{tabular}{ p{5cm} p{1.5cm} }
+		\hline
+		\hline
+		&  \makecell{\textbf{5-fold} \\ $\tilde{\pi} = 0.5$} \\
+		\hline
+		\multicolumn{2}{c}{Guassianized features} \\
+		\hline
+		Tied-GMM (n\_comp=4)  & 0.000 \\
+		GMM(n\_components=8) 	& 0.000 \\	
+		Tied-Diag-GMM (n\_comp=16) & 	\boxit{red}{.35in}0.000 \\
+		Diag-GMM (n\_comp=16) & 0.000 \\
+		\hline
+		\multicolumn{2}{c}{Z-normalized features} \\
+		\hline
+		Tied-GMM (n\_comp=4)  & 0.000 \\
+		GMM (n\_components=8) 	& 0.000 \\	
+		Tied-Diag-GMM (n\_comp=16) & 0.000 \\
+		Diag-GMM (n\_comp=16) & 0.000 \\
+		\hline
+	\end{tabular}
+	\caption{min DCF for Gaussian Mixture Models}
+	\label{tab:gmm_res}
+\end{table}
+
+
 
 \subsection{Model selection}
 At the end of our preliminary analysis, we can conclude that the Support Vector Classifier with an RBF kernel having $log\gamma = -2$, applied to standardized features yields the best performances. 
@@ -232,3 +259,10 @@ To sum up, here's are our best choices:
 	\item Quad-LR ($\lambda=0$)
 	\item RBF SVC($log \gamma=-2$)
 \end{itemize}
+
+
+\subsection{Combining the best classifiers}
+After selecting the most perfoming classifiers using the minimum detection cost function as metric, we aim at assesing their performances using the optimal theoretical threshold $t = - log \frac{\tilde{\pi}}{1-\tilde{\pi}}$. Since we're dealing with non-probabilistic models, we expect a (slight) worsening of the performances wrt to the min DCF.
+
+ \subsection{Discussion}
+ From the above results, we can observe that the fusion of the RBF SVC with the Quadratic Logistic Regression yields similar results of the same models fused with an 8 components full-covariance Gaussian Mixture Model. Our choice is, thereby, the simplest of the two as, given the same performances, the simpler of the two reduces the odds of incurring into overfitting. 
