@@ -7,6 +7,11 @@ from .split import (
     leave_one_out_split
 )
 
+from .score import (
+    calibrate,
+    kfold_calibrate,
+    k_fold_joint_eval
+)
 
 __all__ = [
     "CrossValidator",
@@ -14,4 +19,7 @@ __all__ = [
     "train_test_split",
     "k_fold_split",
     "leave_one_out_split",
+    "calibrate",
+    "kfold_calibrate",
+    "k_fold_joint_eval"
 ]

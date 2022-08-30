@@ -79,7 +79,7 @@ def k_fold_indices(X,
             " got n_splits=%s." % n_folds
         )
 
-    n_samples, _ = X.shape
+    n_samples = len(X)
     if shuffle:
         np.random.seed(seed)
         indices = np.random.permutation(n_samples)
