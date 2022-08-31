@@ -68,11 +68,10 @@ where X is the data matrix.
 
 Once the best models have been identified, we analyze their individual and fused (i.e. we join them) performances using the actual DCF with the optimal theoretical threshold
 
-$$ t = - \frac{\tilde{\pi}}{1-\tilde{\pi}} $$
+$$ t = - log \frac{\tilde{\pi}}{1-\tilde{\pi}} $$
 
 and recalibrate the scores using an affine linear function
 
 $$ f(s) = \alpha s + \beta - t $$
 
 whose parameters are estimated via a a Linear Logistic Regression model.
-

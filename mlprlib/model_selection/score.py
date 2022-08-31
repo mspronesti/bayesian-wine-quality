@@ -62,10 +62,13 @@ def calibrate(scores_train,
     -------
         estimated and calibration dcf 
     """
-    lr = LogisticRegression(l_scaler=l)
-    lr.fit(scores_train, y_train)
+    llr_train = scores_train.reshape([scores_train.shape[0], 1])
+    llr_test = scores_test.reshape([scores_test.shape[0], 1])
 
-    _, score = lr.predict(scores_test, return_proba=True)
+    lr = LogisticRegression(l_scaler=l)
+    lr.fit(llr_train, y_train)
+
+    _, score = lr.predict(llr_test, return_proba=True)
     # the calibration score is obtained from
     # the score of the LR subtracted by the theoretical
     # threshold
@@ -211,13 +214,7 @@ def joint_eval(*scores,
             the minimum detection cost (min bayes risk)
     """
     n_scores = len(scores)
-    n_models = len(scores[0])
-
-    if n_scores <= 1:
-        raise ValueError(
-            "joint evaluation requires at least two"
-            " two models. Got n_models=%s." % n_models
-        )
+    n_models = len(scores) // 2
 
     if n_scores != 2 * n_models:
         raise ValueError(
@@ -225,19 +222,19 @@ def joint_eval(*scores,
             " for each  models. Got %s scores." % n_scores
         )
     # iterate over training and testing scores
-    X_train = np.zeros([n_models, scores[0].shape])
-    X_test = np.zeros([n_models, scores[0].shape])
+    X_train = np.zeros([scores[0].shape[0], n_scores])
+    X_test = np.zeros([scores[1].shape[0], n_scores])
     for s in range(0, n_scores, 2):
         train_score = scores[s]
         test_score = scores[s+1]
         X_train[:, s] = train_score
-        X_test[:, s+1] = test_score
+        X_test[:, s] = test_score
 
     lr = LogisticRegression(l_scaler=l)
     lr.fit(X_train, y_train)
     _, score = lr.predict(X_test, return_proba=True)
 
-    min_dfc = min_detection_cost_fun(score, y_test, pi, cfn, cfp)
+    min_dfc, _ = min_detection_cost_fun(score, y_test, pi, cfn, cfp)
     act_dfc = detection_cost_fun(score, y_test, pi, cfn, cfp)
     return (
         min_dfc,

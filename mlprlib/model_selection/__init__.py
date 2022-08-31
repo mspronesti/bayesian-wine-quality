@@ -9,6 +9,7 @@ from .split import (
 
 from .score import (
     calibrate,
+    joint_eval,
     kfold_calibrate,
     k_fold_joint_eval
 )
@@ -20,6 +21,7 @@ __all__ = [
     "k_fold_split",
     "leave_one_out_split",
     "calibrate",
+    "joint_eval",
     "kfold_calibrate",
     "k_fold_joint_eval"
 ]

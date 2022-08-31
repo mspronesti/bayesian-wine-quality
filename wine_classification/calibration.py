@@ -85,19 +85,19 @@ if __name__ == '__main__':
     }
     transformers = [StandardScaler()]
 
-    # for model, name in models.items():
-    #     # progress_bar.set_description(
-    #     #     "MODEL: %s" % type(model).__name__
-    #     # )
-    #     # cross validator
-    #     print(name)
-    #     print("----")
-    #     cv = CrossValidator(n_folds=5)
-    #     cv.fit(X, y, model, transformers)
-    #     scores = cv.scores
-    #
-    #     np.save("../results/llr%s.npy" % name, scores)
-    #     scores_kfold_calibrate(scores, y, n_folds)
+    for model, name in models.items():
+        # progress_bar.set_description(
+        #     "MODEL: %s" % type(model).__name__
+        # )
+        # cross validator
+        print(name)
+        print("----")
+        cv = CrossValidator(n_folds=5)
+        cv.fit(X, y, model, transformers)
+        scores = cv.scores
+
+        np.save("../results/llr%s.npy" % name, scores)
+        scores_kfold_calibrate(scores, y, n_folds)
 
     llr_svm = np.load("../results/llrSVC.npy")
     llr_qlr = np.load("../results/llrQLR.npy")
