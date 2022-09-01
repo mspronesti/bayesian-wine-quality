@@ -4,6 +4,7 @@ kernels with a 5-fold cross validation approach to
 classify wines and analyze the performances these methods yield.
 """
 import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from mlprlib.dataset import (
@@ -30,10 +31,11 @@ l_list = [0, 1e-6, 1e-4, 1e-2, 1, 100]
 
 
 def lr_lambda_search(writer, lr_t: str, data_t: str,
-            X_train, y_train, X_test, y_test):
+                     X_train, y_train, X_test, y_test):
     lr = QuadLogisticRegression() if lr_t == 'quadratic' \
         else LogisticRegression()
 
+    dcf_scores = []
     progress_bar = tqdm(l_list)
     for l in progress_bar:
         progress_bar.set_description(
@@ -46,6 +48,8 @@ def lr_lambda_search(writer, lr_t: str, data_t: str,
         _, score = lr.predict(X_test, return_proba=True)
         min_dcf, _ = min_detection_cost_fun(score, y_test)
         writer("lambda: %s | %f" % (l, min_dcf))
+        dcf_scores.append(min_dcf)
+    return dcf_scores
 
 
 def split_data_lr(writer, lr_t: 'str', data_t: 'str', X, y):
@@ -61,7 +65,7 @@ def split_data_lr(writer, lr_t: 'str', data_t: 'str', X, y):
     writer("----------------")
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
-    lr_lambda_search(writer, lr_t, data_t, X_train, y_train, X_val, y_val)
+    return lr_lambda_search(writer, lr_t, data_t, X_train, y_train, X_val, y_val)
 
 
 def k_fold_lr(writer, lr_t: str,
@@ -98,6 +102,7 @@ def k_fold_lr(writer, lr_t: str,
     lr = QuadLogisticRegression() if lr_t == 'quadratic' \
         else LogisticRegression()
 
+    dcf_scores = []
     progress_bar = tqdm(l_list)
     for l in progress_bar:
         progress_bar.set_description(
@@ -109,6 +114,21 @@ def k_fold_lr(writer, lr_t: str,
         scores = cv.scores
         min_dcf, _ = min_detection_cost_fun(scores, y)
         writer("lambda: %s | %f" % (l, min_dcf))
+        dcf_scores.append(min_dcf)
+
+    return dcf_scores
+
+
+def save_plots(dcf_raw, dcf_gauss, dcf_std, fig_name):
+    plt.figure()
+    plt.plot(l_list, dcf_raw)
+    plt.plot(l_list, dcf_gauss)
+    plt.plot(l_list, dcf_std)
+    plt.xscale("log")
+    plt.xlabel(r"$\lambda$")
+    plt.ylabel("min DCF")
+    plt.legend(["Raw", "Gaussianized", "Z-normalized"])
+    plt.savefig("../report/assets/%s.png" % fig_name)
 
 
 if __name__ == '__main__':
@@ -127,31 +147,39 @@ if __name__ == '__main__':
     writer("LR Type : linear")
     writer("----------------")
     writer("Raw data")
-    split_data_lr(writer, 'linear', 'raw', X, y)
+    scores_1_raw = split_data_lr(writer, 'linear', 'raw', X, y)
+    scores_5_raw = k_fold_lr(writer, 'linear', 'raw', X, y, n_folds)
 
-    k_fold_lr(writer, 'linear', 'raw', X, y, n_folds)
     writer("Gaussianized data")
-    split_data_lr(writer, 'linear', 'gauss', X_gauss, y)
-    k_fold_lr(writer, 'linear', 'gauss', X, y, n_folds, gauss=True)
+    scores_1_gauss = split_data_lr(writer, 'linear', 'gauss', X_gauss, y)
+    scores_5_gauss = k_fold_lr(writer, 'linear', 'gauss', X, y, n_folds, gauss=True)
 
     writer("Standardized data")
-    split_data_lr(writer, 'linear', 'std', X_std, y)
-    k_fold_lr(writer, 'linear', 'std', X, y, n_folds, std=True)
+    scores_1_std = split_data_lr(writer, 'linear', 'std', X_std, y)
+    scores_5_std = k_fold_lr(writer, 'linear', 'std', X, y, n_folds, std=True)
+
+    # save scores plot of linear LR
+    save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "lr_single")
+    save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "lr_kfold")
 
     writer("\n----------------")
     writer("LR type : quadratic")
     writer("----------------")
     writer("Raw data")
-    split_data_lr(writer, 'quadratic', 'raw', X, y)
-    k_fold_lr(writer, 'quadratic', 'raw', X, y, n_folds)
+    scores_1_raw = split_data_lr(writer, 'quadratic', 'raw', X, y)
+    scores_5_raw = k_fold_lr(writer, 'quadratic', 'raw', X, y, n_folds)
 
     writer("Gaussianized data")
-    split_data_lr(writer, 'quadratic', 'gauss', X_gauss, y)
-    k_fold_lr(writer, 'quadratic', 'gauss', X, y, n_folds, gauss=True)
+    scores_1_gauss = split_data_lr(writer, 'quadratic', 'gauss', X_gauss, y)
+    scores_5_gauss = k_fold_lr(writer, 'quadratic', 'gauss', X, y, n_folds, gauss=True)
 
     writer("Standardized data")
-    split_data_lr(writer, 'quadratic', 'std', X_std, y)
-    k_fold_lr(writer, 'quadratic', 'std', X, y, n_folds, std=True)
+    scores_1_std = split_data_lr(writer, 'quadratic', 'std', X_std, y)
+    scores_5_std = k_fold_lr(writer, 'quadratic', 'std', X, y, n_folds, std=True)
+
+    # save scores plot of linear LR
+    save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "qlr_single")
+    save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "qlr_kfold")
 
     writer.destroy()
 
@@ -163,4 +191,3 @@ if __name__ == '__main__':
     # Gaussianised data
     X_gauss = np.load('../results/gaussian_feats.npy').T
     X_test_gauss = np.load('../results/gaussian_feats_test.npy').T
-

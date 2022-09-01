@@ -31,7 +31,7 @@ def roc_curve(llr, y):
     Computes the ROC curve given the
     likelihood ratio and the true labels
 
-    Parameters
+    Parameter s
     ----------
     llr: likelihood ratio
     y: true labels
@@ -48,19 +48,24 @@ def roc_curve(llr, y):
             element i is the true positive rate of
             predictions with score >= thresholds[i].
     """
-    # TODO: not tested
     sorted_llr = np.sort(llr)
-    fpr = np.array(sorted_llr.shape[0])
+    fpr = np.zeros(sorted_llr.shape[0])
+    tpr = np.zeros(sorted_llr.shape[0])
 
-    for i in sorted_llr:
-        cm = confusion_matrix(llr > i, y)
+    for i, t in enumerate(sorted_llr):
+        cm = confusion_matrix(y, llr > t)
+        fnr = cm[0, 1] / (cm[0, 1] + cm[1, 1])
         fpr[i] = cm[1, 0] / (cm[0, 0] + cm[1, 0])
+        tpr[i] = 1 - fnr
 
-    return fpr, 1 - fpr
+    return fpr, tpr
 
 
 def plot_roc_curve(llr, y, label=None):
     fpr, tpr = roc_curve(llr, y)
+    plt.xlabel("fpr")
+    plt.ylabel("tpr")
+    plt.grid(b=True)
     plt.plot(fpr, tpr, label=label)
 
 

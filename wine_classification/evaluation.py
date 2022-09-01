@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from mlprlib.dataset import (
     load_wine_train,
@@ -16,9 +17,25 @@ from mlprlib.model_selection import (
     joint_eval
 )
 
-from mlprlib.metrics import detection_cost_fun
+from mlprlib.metrics import (
+    detection_cost_fun,
+    roc_curve
+)
 
 from mlprlib.utils import Writer
+
+
+def plot_roc(scores, y, fig_name: str, labels: list):
+    plt.figure()
+    plt.grid(b=True)
+    plt.xlabel('false positive rate')
+    plt.ylabel('true positive rate')
+    for llr in scores:
+        fpr, tpr = roc_curve(llr, y)
+        plt.plot(fpr, tpr)
+    plt.legend(labels)
+    plt.savefig("../report/assets/%s.png" % fig_name)
+
 
 if __name__ == '__main__':
     X_train, y_train = load_wine_train(feats_first=False)
@@ -86,37 +103,48 @@ if __name__ == '__main__':
 
     writer("\n\nSVC + QLR")
     writer("--------------")
-    min_dcf, act_dcf, _ = joint_eval(*[llr_svc, llr_svc_eval,
-                                       llr_qlr, llr_qlr_eval],
-                                     y_train=y_train,
-                                     y_test=y_test,
-                                     l=lambdas_joint[0],
-                                     pi=pi, cfn=cfn, cfp=cfp)
+    min_dcf, act_dcf, llr_svc_qlr = \
+        joint_eval(*[llr_svc, llr_svc_eval,
+                     llr_qlr, llr_qlr_eval],
+                   y_train=y_train,
+                   y_test=y_test,
+                   l=lambdas_joint[0],
+                   pi=pi, cfn=cfn, cfp=cfp)
 
     writer("min dcf: %s \nactual dcf: %s" % (min_dcf, act_dcf))
 
     # SVC + GMM
     writer("\n\nSVC + GMM")
     writer("--------------")
-    min_dcf, act_dcf, _ = joint_eval(*[llr_svc, llr_svc_eval,
-                                       llr_gmm, llr_gmm_eval],
-                                     y_train=y_train,
-                                     y_test=y_test,
-                                     l=lambdas_joint[1],
-                                     pi=pi, cfn=cfn, cfp=cfp)
+    min_dcf, act_dcf, llr_svc_gmm = \
+        joint_eval(*[llr_svc, llr_svc_eval,
+                     llr_gmm, llr_gmm_eval],
+                   y_train=y_train,
+                   y_test=y_test,
+                   l=lambdas_joint[1],
+                   pi=pi, cfn=cfn, cfp=cfp)
 
     writer("min dcf: %s\n actual dcf: %s" % (min_dcf, act_dcf))
 
     # SVC + GMM + QLR
     writer("\n\nSVC + GMM + QLR")
     writer("--------------")
-    min_dcf, act_dcf, _ = joint_eval(*[llr_svc, llr_svc_eval,
-                                       llr_qlr, llr_qlr_eval,
-                                       llr_gmm, llr_gmm_eval],
-                                     y_train=y_train,
-                                     y_test=y_test,
-                                     l=lambdas_joint[2],
-                                     pi=pi, cfn=cfn, cfp=cfp)
+    min_dcf, act_dcf, llr_svc_gmm_qlr = \
+        joint_eval(*[llr_svc, llr_svc_eval,
+                     llr_qlr, llr_qlr_eval,
+                     llr_gmm, llr_gmm_eval],
+                   y_train=y_train,
+                   y_test=y_test,
+                   l=lambdas_joint[2],
+                   pi=pi, cfn=cfn, cfp=cfp)
 
     writer("min dcf: %s\n actual dcf: %s" % (min_dcf, act_dcf))
     writer.destroy()
+
+    # plot ROC of single models
+    llrs_single = [llr_svc_eval, llr_qlr_eval, llr_gmm_eval]
+    plot_roc(llrs_single, y_test, "roc_single_models", ["SVC", "QLR", "GMM"])
+
+    # plot ROC of joint models
+    llrs_joint = [llr_svc_qlr, llr_svc_gmm, llr_svc_gmm_qlr]
+    plot_roc(llrs_joint, y_test, "roc_joint_models", ["SVC+QLR", "SVC+GMM", "SVC+QLR+GMM"])
