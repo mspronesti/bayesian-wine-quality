@@ -36,6 +36,34 @@ from mlprlib.gaussian import (
 from mlprlib.reduction import PCA
 
 
+def gaussian_classifiers_eval(
+        writer, models,
+        X_train, y_train,
+        X_test, y_test,
+        *,
+        use_pca=False,
+        # ignored if "use_pace" is False
+        n_components=None
+):
+    """This function is used both for evaluation
+    and to evaluate a train-test split"""
+    if use_pca:
+        pca = PCA(n_components=n_components)
+        X_train = pca.fit_transform(X_train)
+        X_test = pca.transform(X_test)
+
+    progress_bar = tqdm(models)
+    for model in progress_bar:
+        progress_bar.set_description(
+            "%s | single split" % type(model).__name__
+        )
+        model.fit(X_train, y_train)
+        _, score = model.predict(X_test, return_proba=True)
+        min_dcf, _ = min_detection_cost_fun(score, y_test)
+        writer("model: %s \t| dcf: %f"
+               % (type(model).__name__, min_dcf))
+
+
 def single_split_gauss(writer, models, X, y,
                        *,
                        use_pca=False,
@@ -44,32 +72,16 @@ def single_split_gauss(writer, models, X, y,
                        ):
     """
     Splits given data in train and validation set and
-     uses the Support Vector Classifier on it, using the given
-     kernel and searching on a list of `C`
-
-     for the following values:
-         [.1, 1, 10]
+     uses the Gaussian classifiers on it, using the given
+     covariance
     """
     writer("----------------")
     writer("Single split")
     writer("----------------")
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
-    if use_pca:
-        pca = PCA(n_components=n_components)
-        X_train = pca.fit_transform(X_train)
-        X_val = pca.transform(X_val)
-
-    progress_bar = tqdm(models)
-    for model in progress_bar:
-        progress_bar.set_description(
-            "%s | single split" % type(model).__name__
-        )
-        model.fit(X_train, y_train)
-        _, score = model.predict(X_val, return_proba=True)
-        min_dcf, _ = min_detection_cost_fun(score, y_val)
-        writer("model: %s \t| dcf: %f"
-               % (type(model).__name__, min_dcf))
+    gaussian_classifiers_eval(writer, models, X_train, y_train, X_val, y_val,
+                              use_pca=use_pca, n_components=n_components)
 
 
 def k_fold_gauss(writer, models, X, y,
@@ -119,23 +131,10 @@ if __name__ == '__main__':
 
     # load the training dataset in the shape (n_samples, n_feats)
     X, y = load_wine_train(feats_first=False)
-    # load the test data in the shape (n_samples, n_feats)
-    X_test, y_test = load_wine_test(feats_first=False)
-
-    # Standardized data
-    sc = StandardScaler()
-    # fit the scaler and transform
-    # it
-    # NOTICE: this is not the data used for the
-    # k-fold cross validation
-    X_std = sc.fit_transform(X)
-    # standardize test data using training data mean and variance
-    X_test_std = sc.transform(X_test)
 
     # Gaussianised data
     # (not used for KFold CV)
     X_gauss = np.load('../results/gaussian_feats.npy').T
-    X_test_gauss = np.load('../results/gaussian_feats_test.npy').T
 
     models = [
         GaussianClassifier(),
@@ -171,3 +170,40 @@ if __name__ == '__main__':
     k_fold_gauss(writer, models, X, y, gauss=True, use_pca=True, n_components=9)
 
     writer.destroy()
+
+    ##########################
+    # evaluation on test set
+    ##########################
+    X_test, y_test = load_wine_test(feats_first=False)
+    gs = GaussianScaler().fit(X)
+
+    X_gauss = gs.transform(X)
+    # transform using X (as reference) as reference
+    # i.e. the scaler is already fitted here!
+    X_test_gauss = gs.transform(X_test)
+
+    writer = Writer("../results/gaussian_results_eval.txt")
+    writer("----------------")
+    writer("Raw data")
+    writer("----------------")
+    gaussian_classifiers_eval(writer, models, X, y, X_test, y_test)
+
+    writer("\n----------------")
+    writer("Gaussian data")
+    writer("----------------")
+    gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test)
+
+    writer("\n----------------")
+    writer("Gaussian data, PCA(n_components=10)")
+    writer("----------------")
+    gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test,
+                              use_pca=True, n_components=10)
+
+    writer("\n----------------")
+    writer("Gaussian data, PCA(n_components=9)")
+    writer("----------------")
+    gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test,
+                              use_pca=True, n_components=9)
+
+    writer.destroy()
+

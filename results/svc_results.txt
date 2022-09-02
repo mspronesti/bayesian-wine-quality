@@ -21,12 +21,12 @@ C: 10.0 | 0.916803 | balance True
 Gaussianized data
 Single Split
 ----------------
-C: 0.1 | 0.760343 | balance False
-C: 0.1 | 0.919501 | balance True
-C: 1.0 | 0.738925 | balance False
-C: 1.0 | 0.673579 | balance True
-C: 10.0 | 0.776348 | balance False
-C: 10.0 | 0.815201 | balance True
+C: 0.1 | 0.349644 | balance False
+C: 0.1 | 0.360439 | balance True
+C: 1.0 | 0.341676 | balance False
+C: 1.0 | 0.351892 | balance True
+C: 10.0 | 0.350223 | balance False
+C: 10.0 | 0.358191 | balance True
 5-fold cross validation
 ----------------
 C: 0.1 | 0.339315 | balance False
@@ -39,12 +39,12 @@ C: 10.0 | 0.356444 | balance True
 Standardized data
 Single Split
 ----------------
-C: 0.1 | 0.760343 | balance False
-C: 0.1 | 0.919501 | balance True
-C: 1.0 | 0.738925 | balance False
-C: 1.0 | 0.673579 | balance True
-C: 10.0 | 0.776348 | balance False
-C: 10.0 | 0.815201 | balance True
+C: 0.1 | 0.349065 | balance False
+C: 0.1 | 0.348486 | balance True
+C: 1.0 | 0.341097 | balance False
+C: 1.0 | 0.358191 | balance True
+C: 10.0 | 0.352470 | balance False
+C: 10.0 | 0.359349 | balance True
 5-fold cross validation
 ----------------
 C: 0.1 | 0.337684 | balance False
@@ -83,12 +83,12 @@ kernel : RBF (log gamma = -1)
 Standardized data
 Single Split
 ----------------
-C: 0.1 | 0.267068 | balance False
-C: 0.1 | 0.264753 | balance True
-C: 1.0 | 0.168625 | balance False
-C: 1.0 | 0.178772 | balance True
-C: 10.0 | 0.134437 | balance False
-C: 10.0 | 0.138421 | balance True
+C: 0.1 | 0.276705 | balance False
+C: 0.1 | 0.288657 | balance True
+C: 1.0 | 0.187898 | balance False
+C: 1.0 | 0.186808 | balance True
+C: 10.0 | 0.164641 | balance False
+C: 10.0 | 0.170872 | balance True
 5-fold cross validation
 ----------------
 C: 0.1 | 0.286297 | balance False
@@ -106,12 +106,12 @@ kernel : RBF (log gamma = -2)
 Standardized data
 Single Split
 ----------------
-C: 0.1 | 0.286478 | balance False
-C: 0.1 | 0.270542 | balance True
-C: 1.0 | 0.216944 | balance False
-C: 1.0 | 0.211292 | balance True
-C: 10.0 | 0.177104 | balance False
-C: 10.0 | 0.189635 | balance True
+C: 0.1 | 0.300678 | balance False
+C: 0.1 | 0.298430 | balance True
+C: 1.0 | 0.207239 | balance False
+C: 1.0 | 0.225559 | balance True
+C: 10.0 | 0.139510 | balance False
+C: 10.0 | 0.160010 | balance True
 5-fold cross validation
 ----------------
 C: 0.1 | 0.296085 | balance False

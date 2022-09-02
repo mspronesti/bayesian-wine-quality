@@ -2,54 +2,54 @@
 GMM Cov Type : Full
 ----------------
 Gaussianized data
-n_components: 2 | 0.328711
-n_components: 4 | 0.302610
-n_components: 8 | 0.296900
-n_components: 16 | 0.295269
-Standardized data
 n_components: 2 | 0.318108
 n_components: 4 | 0.288744
 n_components: 8 | 0.303426
 n_components: 16 | 0.303426
+Standardized data
+n_components: 2 | 0.299347
+n_components: 4 | 0.305873
+n_components: 8 | 0.280587
+n_components: 16 | 0.292822
 
 ----------------
 GMM Cov Type : Diag 
 ----------------
 Gaussianized data
-n_components: 2 | 0.426591
-n_components: 4 | 0.302610
-n_components: 8 | 0.318923
-n_components: 16 | 0.309135
-Standardized data
 n_components: 2 | 0.420881
 n_components: 4 | 0.308320
 n_components: 8 | 0.326264
 n_components: 16 | 0.305873
+Standardized data
+n_components: 2 | 0.449429
+n_components: 4 | 0.349103
+n_components: 8 | 0.335237
+n_components: 16 | 0.322186
 
 ----------------
 GMM Type : Full-Tied
 ----------------
 Gaussianized data
-n_components: 2 | 0.308320
-n_components: 4 | 0.318923
-n_components: 8 | 0.308320
-n_components: 16 | 0.292007
-Standardized data
 n_components: 2 | 0.300979
-n_components: 4 | 0.307504
-n_components: 8 | 0.291191
-n_components: 16 | 0.287928
+n_components: 4 | 0.305873
+n_components: 8 | 0.292822
+n_components: 16 | 0.289560
+Standardized data
+n_components: 2 | 0.312398
+n_components: 4 | 0.308320
+n_components: 8 | 0.310767
+n_components: 16 | 0.305873
 
 ----------------
 GMM Type : Diag-Tied
 ----------------
 Gaussianized data
 n_components: 2 | 0.438010
-n_components: 4 | 0.324633
-n_components: 8 | 0.335237
-n_components: 16 | 0.323002
-Standardized data
-n_components: 2 | 0.438010
 n_components: 4 | 0.329527
 n_components: 8 | 0.333605
 n_components: 16 | 0.309135
+Standardized data
+n_components: 2 | 0.431485
+n_components: 4 | 0.369494
+n_components: 8 | 0.340131
+n_components: 16 | 0.305873

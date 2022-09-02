@@ -1,0 +1,76 @@
+----------------
+LR Type : linear
+----------------
+Raw data
+----------------
+lambda: 0 | 0.341386
+lambda: 1e-06 | 0.341828
+lambda: 0.0001 | 0.337331
+lambda: 0.01 | 0.344778
+lambda: 1 | 0.430062
+lambda: 100 | 0.755548
+Gaussian data
+----------------
+lambda: 0 | 0.340744
+lambda: 1e-06 | 0.340744
+lambda: 0.0001 | 0.340744
+lambda: 0.01 | 0.334982
+lambda: 1 | 0.356488
+lambda: 100 | 0.386029
+Standardized data
+----------------
+lambda: 0 | 0.336405
+lambda: 1e-06 | 0.336405
+lambda: 0.0001 | 0.336267
+lambda: 0.01 | 0.330644
+lambda: 1 | 0.350664
+lambda: 100 | 0.373255
+Standardized data, PCA(n_components=10)
+----------------
+lambda: 0 | 0.339279
+lambda: 1e-06 | 0.339279
+lambda: 0.0001 | 0.338416
+lambda: 0.01 | 0.329359
+lambda: 1 | 0.350664
+lambda: 100 | 0.373255
+
+
+
+----------------
+LR Type : quadratic
+----------------
+Raw data
+----------------
+lambda: 0 | 1.000000
+lambda: 1e-06 | 1.000000
+lambda: 0.0001 | 1.000000
+lambda: 0.01 | 1.000000
+lambda: 1 | 1.000000
+lambda: 100 | 1.000000
+Gaussian data
+----------------
+lambda: 0 | 0.290085
+lambda: 1e-06 | 0.290085
+lambda: 0.0001 | 0.293360
+lambda: 0.01 | 0.284157
+lambda: 1 | 0.361503
+lambda: 100 | 0.446186
+Standardized data
+----------------
+lambda: 0 | 0.264178
+lambda: 1e-06 | 0.265388
+lambda: 0.0001 | 0.264821
+lambda: 0.01 | 0.257174
+lambda: 1 | 0.397918
+lambda: 100 | 0.453446
+Standardized data, PCA(n_components=10)
+----------------
+lambda: 0 | 0.260103
+lambda: 1e-06 | 0.259681
+lambda: 0.0001 | 0.258597
+lambda: 0.01 | 0.267094
+lambda: 1 | 0.397276
+lambda: 100 | 0.454952
+
+
+

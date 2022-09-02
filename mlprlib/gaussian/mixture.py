@@ -160,7 +160,8 @@ def em_estimation(X: np.ndarray,
                 cov *= np.eye(cov.shape[0])
 
             # bound covariance
-            cov = cov_eig_constraint(cov, psi)
+            if not tied:
+                cov = cov_eig_constraint(cov, psi)
             curr_params[g] = [w, mean, cov]
 
         if tied:
@@ -243,7 +244,7 @@ def lbg_estimation(X: np.ndarray,
 
     # initialize parameters
     # this list of lists is going
-    # to be converted into an ndarray
+    # to be converted into a ndarray
     gmm_1 = [(1.0, mean, cov)]
 
     for _ in range(int(np.log2(n_components))):

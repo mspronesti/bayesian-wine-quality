@@ -1,0 +1,31 @@
+----------------
+Raw data
+----------------
+model: GaussianClassifier 	| dcf: 0.336592
+model: NaiveBayes 	| dcf: 0.366567
+model: TiedGaussian 	| dcf: 0.315292
+model: TiedNaiveBayes 	| dcf: 0.368516
+
+----------------
+Gaussian data
+----------------
+model: GaussianClassifier 	| dcf: 0.335784
+model: NaiveBayes 	| dcf: 0.377089
+model: TiedGaussian 	| dcf: 0.319597
+model: TiedNaiveBayes 	| dcf: 0.378740
+
+----------------
+Gaussian data, PCA(n_components=10)
+----------------
+model: GaussianClassifier 	| dcf: 0.320323
+model: NaiveBayes 	| dcf: 0.331887
+model: TiedGaussian 	| dcf: 0.312930
+model: TiedNaiveBayes 	| dcf: 0.309697
+
+----------------
+Gaussian data, PCA(n_components=9)
+----------------
+model: GaussianClassifier 	| dcf: 0.326201
+model: NaiveBayes 	| dcf: 0.337932
+model: TiedGaussian 	| dcf: 0.322008
+model: TiedNaiveBayes 	| dcf: 0.317269

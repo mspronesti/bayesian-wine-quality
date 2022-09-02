@@ -183,11 +183,50 @@ if __name__ == '__main__':
 
     writer.destroy()
 
-    # load the test data in the shape (n_samples, n_feats)
+    ##########################
+    # evaluation on test set
+    ##########################
     X_test, y_test = load_wine_test(feats_first=False)
-    # standardize test data using training data mean and variance
-    X_test_std = standardize(X_test, X.mean(axis=0), X.std(axis=0))
+    gs = GaussianScaler().fit(X)
+    sc = StandardScaler().fit(X)
 
-    # Gaussianised data
-    X_gauss = np.load('../results/gaussian_feats.npy').T
-    X_test_gauss = np.load('../results/gaussian_feats_test.npy').T
+    X_std = sc.transform(X)
+    # transform using the mean and cov
+    # computed in the fit using X (train)
+    # as reference
+    X_test_std = sc.transform(X_test)
+
+    X_gauss = gs.transform(X)
+    # transform using X (as reference) as reference
+    # i.e. the scaler is already fitted here!
+    X_test_gauss = gs.transform(X_test)
+
+    # standardized data with 10 components PCA
+    pca = PCA(n_components=10).fit(X_std)
+    X_pca = pca.transform(X_std)
+    X_test_pca = pca.transform(X_test_std)
+
+    writer = Writer("../results/lr_results_eval.txt")
+    for lr_t in ["linear", "quadratic"]:
+        writer("----------------")
+        writer("LR Type : %s" % lr_t)
+        writer("----------------")
+
+        writer("Raw data")
+        writer("----------------")
+        lr_lambda_search(writer, lr_t, 'raw', X, y, X_test, y_test)
+
+        writer("Gaussian data")
+        writer("----------------")
+        lr_lambda_search(writer, lr_t, 'gauss', X_gauss, y, X_test_gauss, y_test)
+
+        writer("Standardized data")
+        writer("----------------")
+        lr_lambda_search(writer, lr_t, 'std', X_std, y, X_test_std, y_test)
+
+        writer("Standardized data, PCA(n_components=10)")
+        writer("----------------")
+        lr_lambda_search(writer, lr_t, 'std', X_pca, y, X_test_pca, y_test)
+        writer("\n\n")
+
+    writer.destroy()

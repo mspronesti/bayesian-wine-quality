@@ -4,6 +4,7 @@ Gaussian (RBF) kernels with a 5-fold cross validation approach to
 classify wines and analyze the performances these methods yield.
 """
 import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from mlprlib.dataset import (
@@ -30,31 +31,6 @@ from mlprlib.svm import SVClassifier
 C_list = [.1, 1., 10.]
 
 
-# def balance_bounds_svc(X, y, C, pi_t=.5):
-#     """
-#     Retrieves the bounds to be used in
-#     the L-BFGS-B optimization algorithm
-#     in the Support Vector classifier to
-#     balance classes
-#     """
-#     # number of true samples
-#     nt = sum(y == 1) / y.shape[0]
-#     # init bounds
-#     # the expected shape is
-#     # (n_samples, 2) where we want to have
-#     # [0, C0]
-#     # [0, C1]
-#     #  ...
-#     # [0,  Cn]
-#     # being Ci = Ct if yi == 1 else Cf
-#     bounds = np.zeros([X.shape[0], 2])
-#     Ct = C * pi_t / nt
-#     Cf = C * (1 - pi_t) / (1 - nt)
-#     bounds[y == 1, 1] = Ct
-#     bounds[y == 0, 1] = Cf
-#     return bounds
-
-
 def single_split_svm(writer, kernel: str, X, y, **kwargs):
     """
     Splits given data in train and validation set and
@@ -69,6 +45,8 @@ def single_split_svm(writer, kernel: str, X, y, **kwargs):
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
 
+    dfc_score = []
+    dfc_score_balance = []
     progress_bar = tqdm(C_list)
     for c in progress_bar:
         for pi_t in [None, .5]:
@@ -84,13 +62,18 @@ def single_split_svm(writer, kernel: str, X, y, **kwargs):
             _, score = svc.predict(X_val, return_proba=True)
             min_dcf, _ = min_detection_cost_fun(score, y_val)
             writer("C: %s | %f | balance %s" % (c, min_dcf, balance))
+            if balance:
+                dfc_score_balance.append(min_dcf)
+            else:
+                dfc_score.append(min_dcf)
+
+    return dfc_score, dfc_score_balance
 
 
 def k_fold_svm(writer, k, kernel: str,
                gauss: bool,
                std: bool,
                X, y, **kwargs):
-
     writer("5-fold cross validation")
     writer("----------------")
 
@@ -101,6 +84,9 @@ def k_fold_svm(writer, k, kernel: str,
         transformers.append(StandardScaler())
 
     cv = CrossValidator(n_folds=k)
+
+    dfc_score = []
+    dfc_score_balance = []
     progress_bar = tqdm(C_list)
     for c in progress_bar:
         for pi_t in [None, .5]:
@@ -116,6 +102,12 @@ def k_fold_svm(writer, k, kernel: str,
 
             min_dcf, _ = min_detection_cost_fun(scores, y)
             writer("C: %s | %f | balance %s" % (c, min_dcf, balance))
+            if balance:
+                dfc_score_balance.append(min_dcf)
+            else:
+                dfc_score.append(min_dcf)
+
+    return dfc_score, dfc_score_balance
 
 
 def svm_eval(writer, kernel: str, data_t: str,
@@ -142,6 +134,43 @@ def svm_eval(writer, kernel: str, data_t: str,
             writer("C: %s | %f" % (c, min_dcf))
 
 
+def save_plots(dcf_raw, dcf_gauss, dcf_std, fig_name):
+    plt.figure()
+    plt.plot(C_list, dcf_raw)
+    plt.plot(C_list, dcf_gauss)
+    plt.plot(C_list, dcf_std)
+    plt.xscale("log")
+    plt.xlabel("C")
+    plt.ylabel("min DCF")
+    plt.legend(["Raw", "Gaussianized", "Z-normalized"])
+    plt.savefig("../report/assets/%s.png" % fig_name)
+
+
+def save_plots_quad(dcf, dcf_balance, fig_name):
+    plt.figure()
+    plt.plot(C_list, dcf)
+    plt.plot(C_list, dcf_balance)
+    plt.xscale("log")
+    plt.xlabel("C")
+    plt.ylabel("min DCF")
+    plt.legend(["no balancing", "balancing"])
+    plt.savefig("../report/assets/%s.png" % fig_name)
+
+
+def save_plots_rbf(fig_name, *scores):
+    plt.figure()
+    for score in scores:
+        plt.plot(C_list, score)
+    plt.xscale("log")
+    plt.xlabel("C")
+    plt.ylabel("min DCF")
+    plt.legend([r"$log \gamma = -1$",
+                r"$\log \gamma = -1$, balancing",
+                r"$\log \gamma = -2$",
+                r"$\log \gamma = -2$, balancing"])
+    plt.savefig("../report/assets/%s.png" % fig_name)
+
+
 if __name__ == '__main__':
     # number of folds for cross validation
     n_folds = 5
@@ -160,95 +189,107 @@ if __name__ == '__main__':
     X_gauss = np.load('../results/gaussian_feats.npy').T
     X_test_gauss = np.load('../results/gaussian_feats_test.npy').T
 
-    # writer = Writer("../results/svc_results.txt")
-    #
-    # # try the 3 kernels with different
-    # # combinations of data both with and without
-    # # balancing features
-    # writer("kernel: linear")
-    # writer("----------------")
-    # # linear kernel on raw, gaussianized and std data
-    # # with and without feats balancing, with 5-folds and single split
-    # writer("Raw data")
-    # single_split_svm(writer, 'linear', X, y)
-    # k_fold_svm(writer, n_folds, 'linear', gauss=False, std=False, X=X, y=y)
-    #
-    # writer("\nGaussianized data")
-    # single_split_svm(writer, 'linear', X, y)
-    # k_fold_svm(writer, n_folds, 'linear', gauss=True, std=False, X=X, y=y)
-    #
-    # writer("\nStandardized data")
-    # single_split_svm(writer, 'linear', X, y)
-    # k_fold_svm(writer, n_folds, 'linear', gauss=False, std=True, X=X, y=y)
-    #
-    # # polynomial svm (quadratic, d=2) on std data
-    # # with and without feats balancing, with 5-folds and single split
-    # writer("\n\n----------------")
-    # writer("kernel : poly (degree=2)")
-    # writer("----------------")
-    # writer("Standardized data")
-    # single_split_svm(writer, 'poly', X_std, y, gamma=1, degree=2, coef=1)
-    # k_fold_svm(writer, n_folds, 'poly', gauss=False, std=True, X=X, y=y,
-    #            # kwargs for the kernel
-    #            gamma=1, degree=2, coef=1)
-    #
-    # # RBF svm on std data with 2 values of gamma
-    # # with and without feats balancing, with 5-folds and single split
-    # writer("\n\n----------------")
-    # writer("kernel : RBF (log gamma = -1)")
-    # writer("----------------")
-    # writer("Standardized data")
-    # # log gamma = -1
-    # single_split_svm(writer, 'rbf', X_gauss, y, gamma=np.exp(-1), csi=1)
-    # k_fold_svm(writer, n_folds, 'rbf', gauss=False, std=True,
-    #            X=X, y=y, gamma=np.exp(-1), csi=1)
-    #
-    # # log gamma = -2
-    # writer("\n\n----------------")
-    # writer("kernel : RBF (log gamma = -2)")
-    # writer("----------------")
-    # writer("\nStandardized data")
-    # single_split_svm(writer, 'rbf', X_gauss, y, gamma=np.exp(-2), csi=1)
-    # k_fold_svm(writer, n_folds, 'rbf', gauss=False, std=True, X=X, y=y,
-    #            gamma=np.exp(-2), csi=1)
-    #
-    # writer.destroy()
+    writer = Writer("../results/svc_results.txt")
 
-    #############################
-    # Evaluation
-    #############################
-    writer = Writer("../results/svc_results_eval.txt")
+    # try the 3 kernels with different
+    # combinations of data both with and without
+    # balancing features
+    writer("kernel: linear")
     writer("----------------")
-    writer("kernel : linear")
-    writer("----------------")
+    # linear kernel on raw, gaussianized and std data
+    # with and without feats balancing, with 5-folds and single split
     writer("Raw data")
-    svm_eval(writer, 'linear', 'raw', X, y, X_test, y_test)
-    writer("\nGaussianized data")
-    svm_eval(writer, 'linear', 'gauss', X_gauss, y, X_test_gauss, y_test)
-    writer("\nStandardized data")
-    svm_eval(writer, 'linear', 'std', X_std, y, X_test_std, y_test)
+    scores_1_raw, scores_1_raw_bal = single_split_svm(writer, 'linear', X, y)
+    scores_5_raw, scores_5_raw_bal = k_fold_svm(writer, n_folds, 'linear', gauss=False, std=False, X=X, y=y)
 
+    writer("\nGaussianized data")
+    scores_1_gauss, scores_1_gauss_bal = single_split_svm(writer, 'linear', X_gauss, y)
+    scores_5_gauss, scores_5_gauss_bal = k_fold_svm(writer, n_folds, 'linear', gauss=True, std=False, X=X, y=y)
+
+    writer("\nStandardized data")
+    scores_1_std, scores_1_std_bal = single_split_svm(writer, 'linear', X_std, y)
+    scores_5_std, scores_5_std_bal = k_fold_svm(writer, n_folds, 'linear', gauss=False, std=True, X=X, y=y)
+
+    # save scores for Linear Support Vector Classifier
+    save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "svc_lin_single")
+    save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "svc_lin_kfold")
+    save_plots(scores_1_raw_bal, scores_1_gauss_bal, scores_1_std_bal, "svc_lin_single_bal")
+    save_plots(scores_5_raw_bal, scores_5_gauss_bal, scores_5_std_bal, "svc_lin_kfold_bal")
+
+    # polynomial svm (quadratic, d=2) on std data
+    # with and without feats balancing, with 5-folds and single split
     writer("\n\n----------------")
     writer("kernel : poly (degree=2)")
     writer("----------------")
     writer("Standardized data")
-    svm_eval(writer, 'poly', 'std', X_std, y, X_test_std, y_test,
-             # poly kernel kwargs
-             gamma=1, degree=2, coef=1)
+    scores_1, scores_1_bal = single_split_svm(writer, 'poly', X_std, y, gamma=1, degree=2, coef=1)
+    scores_5, scores_5_bal = k_fold_svm(writer, n_folds, 'poly', gauss=False, std=True, X=X, y=y,
+                                        # kwargs for the kernel
+                                        gamma=1, degree=2, coef=1)
 
+    # Quadratic (Poly 2) SVC
+    save_plots_quad(scores_1, scores_1_bal, "quad_svc")
+    save_plots_quad(scores_5, scores_5_bal, "quad_svc_kfold")
+
+    # RBF svm on std data with 2 values of gamma
+    # with and without feats balancing, with 5-folds and single split
+    writer("\n\n----------------")
+    writer("kernel : RBF (log gamma = -1)")
+    writer("----------------")
+    writer("Standardized data")
+    # log gamma = -1
+    scores_1_m1, scores_1_bal_m1 = single_split_svm(writer, 'rbf', X_std, y, gamma=np.exp(-1), csi=1)
+    scores_5_m1, scores_5_bal_m1 = k_fold_svm(writer, n_folds, 'rbf', gauss=False, std=True,
+                                              X=X, y=y, gamma=np.exp(-1), csi=1)
+
+    # log gamma = -2
     writer("\n\n----------------")
     writer("kernel : RBF (log gamma = -2)")
     writer("----------------")
-    writer("Standardized data")
-    svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test,
-             # poly kernel kwargs
-             gamma=np.exp(-2), csi=1)
+    writer("\nStandardized data")
+    scores_1_m2, scores_1_bal_m2 = single_split_svm(writer, 'rbf', X_std, y, gamma=np.exp(-2), csi=1)
+    scores_5_m2, scores_5_bal_m2 = k_fold_svm(writer, n_folds, 'rbf', gauss=False, std=True, X=X, y=y,
+                                              gamma=np.exp(-2), csi=1)
 
-    writer("\n\n----------------")
-    writer("kernel : RBF (log gamma = -2)")
-    writer("----------------")
-    writer("Standardized data")
-    svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test,
-             # poly kernel kwargs
-             gamma=np.exp(-1), csi=1)
+    save_plots_rbf("svc_rbf_single", scores_1_m1, scores_1_bal_m1, scores_1_m2, scores_1_bal_m2)
+    save_plots_rbf("svc_rbf_kfold", scores_5_m1, scores_5_bal_m1, scores_5_m2, scores_5_bal_m2)
     writer.destroy()
+
+    #############################
+    # Evaluation
+    #############################
+    # writer = Writer("../results/svc_results_eval.txt")
+    # writer("----------------")
+    # writer("kernel : linear")
+    # writer("----------------")
+    # writer("Raw data")
+    # svm_eval(writer, 'linear', 'raw', X, y, X_test, y_test)
+    # writer("\nGaussianized data")
+    # svm_eval(writer, 'linear', 'gauss', X_gauss, y, X_test_gauss, y_test)
+    # writer("\nStandardized data")
+    # svm_eval(writer, 'linear', 'std', X_std, y, X_test_std, y_test)
+    #
+    # writer("\n\n----------------")
+    # writer("kernel : poly (degree=2)")
+    # writer("----------------")
+    # writer("Standardized data")
+    # svm_eval(writer, 'poly', 'std', X_std, y, X_test_std, y_test,
+    #          # poly kernel kwargs
+    #          gamma=1, degree=2, coef=1)
+    #
+    # writer("\n\n----------------")
+    # writer("kernel : RBF (log gamma = -2)")
+    # writer("----------------")
+    # writer("Standardized data")
+    # svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test,
+    #          # poly kernel kwargs
+    #          gamma=np.exp(-2), csi=1)
+    #
+    # writer("\n\n----------------")
+    # writer("kernel : RBF (log gamma = -2)")
+    # writer("----------------")
+    # writer("Standardized data")
+    # svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test,
+    #          # poly kernel kwargs
+    #          gamma=np.exp(-1), csi=1)
+    # writer.destroy()
