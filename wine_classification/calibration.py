@@ -104,10 +104,16 @@ if __name__ == '__main__':
     llr_gmm = np.load("../results/llrGMM.npy")
 
     # SVM + QLR
+    print("SVM + QLR")
+    print("----------\n")
     scores_kfold_fusion([llr_svm, llr_qlr], y, n_folds)
     # SVM + GMM
+    print("SVM + GMM")
+    print("----------\n")
     scores_kfold_fusion([llr_svm, llr_gmm], y, n_folds)
     # SVM + GMM + QLR
+    print("SVM + GMM + QLR")
+    print("----------\n")
     scores_kfold_fusion([llr_svm, llr_qlr, llr_gmm], y, n_folds)
 
 

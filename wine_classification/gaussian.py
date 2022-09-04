@@ -13,12 +13,10 @@ from mlprlib.dataset import (
 
 from mlprlib.model_selection import (
     train_test_split,
-    CrossValidator,
-    KFold
+    CrossValidator
 )
 
 from mlprlib.preprocessing import (
-    standardize,
     StandardScaler,
     GaussianScaler,
 )
@@ -40,6 +38,7 @@ def gaussian_classifiers_eval(
         writer, models,
         X_train, y_train,
         X_test, y_test,
+        pi=.5,
         *,
         use_pca=False,
         # ignored if "use_pace" is False
@@ -55,16 +54,18 @@ def gaussian_classifiers_eval(
     progress_bar = tqdm(models)
     for model in progress_bar:
         progress_bar.set_description(
-            "%s | single split" % type(model).__name__
+            "%s | single split | pi %s" %
+            (type(model).__name__, pi)
         )
         model.fit(X_train, y_train)
         _, score = model.predict(X_test, return_proba=True)
-        min_dcf, _ = min_detection_cost_fun(score, y_test)
+        min_dcf, _ = min_detection_cost_fun(score, y_test, pi)
         writer("model: %s \t| dcf: %f"
                % (type(model).__name__, min_dcf))
 
 
 def single_split_gauss(writer, models, X, y,
+                       pi=.5,
                        *,
                        use_pca=False,
                        # ignored if "use_pace" is False
@@ -80,12 +81,13 @@ def single_split_gauss(writer, models, X, y,
     writer("----------------")
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
-    gaussian_classifiers_eval(writer, models, X_train, y_train, X_val, y_val,
+    gaussian_classifiers_eval(writer, models, X_train, y_train, X_val, y_val, pi,
                               use_pca=use_pca, n_components=n_components)
 
 
 def k_fold_gauss(writer, models, X, y,
                  n_folds=5,
+                 pi=.5,
                  *,
                  std=False,
                  gauss=False,
@@ -116,12 +118,13 @@ def k_fold_gauss(writer, models, X, y,
     progress_bar = tqdm(models)
     for model in progress_bar:
         progress_bar.set_description(
-            "%s | 5-fold cross val" % type(model).__name__
+            "%s | 5-fold cross val | pi %s"
+            % (type(model).__name__, pi)
         )
         cv.fit(X, y, model, transformers)
         # acquire the scores after cv
         scores = cv.scores
-        min_dcf, _ = min_detection_cost_fun(scores, y)
+        min_dcf, _ = min_detection_cost_fun(scores, y, pi)
         writer("model: %s \t| dcf: %f"
                % (type(model).__name__, min_dcf))
 
@@ -145,29 +148,31 @@ if __name__ == '__main__':
 
     writer = Writer("../results/gaussian_results.txt")
 
-    writer("----------------")
-    writer("Raw data")
-    writer("----------------")
-    single_split_gauss(writer, models, X, y)
-    k_fold_gauss(writer, models, X, y, n_folds)
+    for pi in [.1, .5, .9]:
+        writer("*********** pi = %s ***********\n" % pi)
+        writer("----------------")
+        writer("Raw data")
+        writer("----------------")
+        single_split_gauss(writer, models, X, y, pi)
+        k_fold_gauss(writer, models, X, y, n_folds, pi)
 
-    writer("\n----------------")
-    writer("Gaussian data")
-    writer("----------------")
-    single_split_gauss(writer, models, X_gauss, y)
-    k_fold_gauss(writer, models, X, y, n_folds, gauss=True)
+        writer("\n----------------")
+        writer("Gaussian data")
+        writer("----------------")
+        single_split_gauss(writer, models, X_gauss, y, pi)
+        k_fold_gauss(writer, models, X, y, n_folds, pi, gauss=True)
 
-    writer("\n----------------")
-    writer("Gaussian data, PCA(n_components=10)")
-    writer("----------------")
-    single_split_gauss(writer, models, X_gauss, y, use_pca=True, n_components=10)
-    k_fold_gauss(writer, models, X, y, gauss=True, use_pca=True, n_components=10)
+        writer("\n----------------")
+        writer("Gaussian data, PCA(n_components=10)")
+        writer("----------------")
+        single_split_gauss(writer, models, X_gauss, y, pi, use_pca=True, n_components=10)
+        k_fold_gauss(writer, models, X, y, n_folds, pi, gauss=True, use_pca=True, n_components=10)
 
-    writer("\n----------------")
-    writer("Gaussian data, PCA(n_components=9)")
-    writer("----------------")
-    single_split_gauss(writer, models, X_gauss, y, use_pca=True, n_components=9)
-    k_fold_gauss(writer, models, X, y, gauss=True, use_pca=True, n_components=9)
+        writer("\n----------------")
+        writer("Gaussian data, PCA(n_components=9)")
+        writer("----------------")
+        single_split_gauss(writer, models, X_gauss, y, pi, use_pca=True, n_components=9)
+        k_fold_gauss(writer, models, X, y, n_folds, pi, gauss=True, use_pca=True, n_components=9)
 
     writer.destroy()
 
@@ -183,27 +188,29 @@ if __name__ == '__main__':
     X_test_gauss = gs.transform(X_test)
 
     writer = Writer("../results/gaussian_results_eval.txt")
-    writer("----------------")
-    writer("Raw data")
-    writer("----------------")
-    gaussian_classifiers_eval(writer, models, X, y, X_test, y_test)
+    for pi in [.1, .5, .9]:
+        writer("*********** pi = %s ***********\n" % pi)
+        writer("----------------")
+        writer("Raw data")
+        writer("----------------")
+        gaussian_classifiers_eval(writer, models, X, y, X_test, y_test, pi)
 
-    writer("\n----------------")
-    writer("Gaussian data")
-    writer("----------------")
-    gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test)
+        writer("\n----------------")
+        writer("Gaussian data")
+        writer("----------------")
+        gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test, pi)
 
-    writer("\n----------------")
-    writer("Gaussian data, PCA(n_components=10)")
-    writer("----------------")
-    gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test,
-                              use_pca=True, n_components=10)
+        writer("\n----------------")
+        writer("Gaussian data, PCA(n_components=10)")
+        writer("----------------")
+        gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test, pi,
+                                  use_pca=True, n_components=10)
 
-    writer("\n----------------")
-    writer("Gaussian data, PCA(n_components=9)")
-    writer("----------------")
-    gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test,
-                              use_pca=True, n_components=9)
+        writer("\n----------------")
+        writer("Gaussian data, PCA(n_components=9)")
+        writer("----------------")
+        gaussian_classifiers_eval(writer, models, X_gauss, y, X_test_gauss, y_test, pi,
+                                  use_pca=True, n_components=9)
 
     writer.destroy()
 

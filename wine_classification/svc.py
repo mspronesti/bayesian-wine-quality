@@ -31,7 +31,7 @@ from mlprlib.svm import SVClassifier
 C_list = [.1, 1., 10.]
 
 
-def single_split_svm(writer, kernel: str, X, y, **kwargs):
+def single_split_svm(writer, kernel: str, X, y, pi=.5, **kwargs):
     """
     Splits given data in train and validation set and
      uses the Support Vector Classifier on it, using the given
@@ -60,8 +60,9 @@ def single_split_svm(writer, kernel: str, X, y, **kwargs):
             svc.fit(X_train, y_train)
 
             _, score = svc.predict(X_val, return_proba=True)
-            min_dcf, _ = min_detection_cost_fun(score, y_val)
-            writer("C: %s | %f | balance %s" % (c, min_dcf, balance))
+            min_dcf, _ = min_detection_cost_fun(score, y_val, pi)
+            writer("C: %s | %f | balance %s | pi %s"
+                   % (c, min_dcf, balance, pi))
             if balance:
                 dfc_score_balance.append(min_dcf)
             else:
@@ -73,7 +74,8 @@ def single_split_svm(writer, kernel: str, X, y, **kwargs):
 def k_fold_svm(writer, k, kernel: str,
                gauss: bool,
                std: bool,
-               X, y, **kwargs):
+               X, y, pi,
+               **kwargs):
     writer("5-fold cross validation")
     writer("----------------")
 
@@ -93,14 +95,14 @@ def k_fold_svm(writer, k, kernel: str,
             # if pi_T is None, don't re-balance
             balance = pi_t is not None
             progress_bar.set_description(
-                "KERNEL %s | C: %f | balance: %s | 5-fold"
-                % (kernel, c, balance)
+                "KERNEL %s | C: %f | balance: %s | 5-fold | pi %s"
+                % (kernel, c, balance, pi)
             )
             svc = SVClassifier(C=c, kernel=kernel, pi_t=pi_t, **kwargs)
             cv.fit(X, y, svc, transformers)
             scores = cv.scores
 
-            min_dcf, _ = min_detection_cost_fun(scores, y)
+            min_dcf, _ = min_detection_cost_fun(scores, y, pi)
             writer("C: %s | %f | balance %s" % (c, min_dcf, balance))
             if balance:
                 dfc_score_balance.append(min_dcf)
@@ -111,7 +113,7 @@ def k_fold_svm(writer, k, kernel: str,
 
 
 def svm_eval(writer, kernel: str, data_t: str,
-             X, y, X_ts, y_ts, **kwargs):
+             X, y, X_ts, y_ts, pi=.5, **kwargs):
     """
     Uses SVC on test data using the given
      kernel and searching on a list of `C`
@@ -123,14 +125,14 @@ def svm_eval(writer, kernel: str, data_t: str,
         for pi_t in [None, .5]:
             balance = pi_t is not None
             progress_bar.set_description(
-                "KERNEL: %s | C: %s | data: %s | balance: %s"
-                % (kernel, c, data_t, balance)
+                "KERNEL: %s | C: %s | data: %s | balance: %s | pi %s"
+                % (kernel, c, data_t, balance, pi)
             )
             svc = SVClassifier(C=c, kernel=kernel, pi_t=pi_t, **kwargs)
             svc.fit(X, y)
             _, score = svc.predict(X_ts, return_proba=True)
 
-            min_dcf, _ = min_detection_cost_fun(score, y_ts)
+            min_dcf, _ = min_detection_cost_fun(score, y_ts, pi)
             writer("C: %s | %f" % (c, min_dcf))
 
 
@@ -180,12 +182,13 @@ if __name__ == '__main__':
     # load the test data in the shape (n_samples, n_feats)
     X_test, y_test = load_wine_test(feats_first=False)
 
+    sc = StandardScaler().fit(X)
     # Standardized data
-    X_std = standardize(X)
+    X_std = sc.transform(X)
     # standardize test data using training data mean and variance
-    X_test_std = standardize(X_test, X.mean(axis=0), X.std(axis=0))
+    X_test_std = sc.transform(X_test)
 
-    # Gaussianised data
+    # # Gaussianised data
     X_gauss = np.load('../results/gaussian_feats.npy').T
     X_test_gauss = np.load('../results/gaussian_feats_test.npy').T
 
@@ -258,38 +261,41 @@ if __name__ == '__main__':
     #############################
     # Evaluation
     #############################
-    # writer = Writer("../results/svc_results_eval.txt")
-    # writer("----------------")
-    # writer("kernel : linear")
-    # writer("----------------")
-    # writer("Raw data")
-    # svm_eval(writer, 'linear', 'raw', X, y, X_test, y_test)
-    # writer("\nGaussianized data")
-    # svm_eval(writer, 'linear', 'gauss', X_gauss, y, X_test_gauss, y_test)
-    # writer("\nStandardized data")
-    # svm_eval(writer, 'linear', 'std', X_std, y, X_test_std, y_test)
-    #
-    # writer("\n\n----------------")
-    # writer("kernel : poly (degree=2)")
-    # writer("----------------")
-    # writer("Standardized data")
-    # svm_eval(writer, 'poly', 'std', X_std, y, X_test_std, y_test,
-    #          # poly kernel kwargs
-    #          gamma=1, degree=2, coef=1)
-    #
-    # writer("\n\n----------------")
-    # writer("kernel : RBF (log gamma = -2)")
-    # writer("----------------")
-    # writer("Standardized data")
-    # svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test,
-    #          # poly kernel kwargs
-    #          gamma=np.exp(-2), csi=1)
-    #
-    # writer("\n\n----------------")
-    # writer("kernel : RBF (log gamma = -2)")
-    # writer("----------------")
-    # writer("Standardized data")
-    # svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test,
-    #          # poly kernel kwargs
-    #          gamma=np.exp(-1), csi=1)
-    # writer.destroy()
+    writer = Writer("../results/svc_results_eval.txt")
+    for pi in [.1, .5, .9]:
+        writer("************* pi = %s *************\n" % pi)
+        writer("----------------")
+        writer("kernel : linear")
+        writer("----------------")
+        writer("Raw data")
+        svm_eval(writer, 'linear', 'raw', X, y, X_test, y_test, pi)
+        writer("\nGaussianized data")
+        svm_eval(writer, 'linear', 'gauss', X_gauss, y, X_test_gauss, y_test, pi)
+        writer("\nStandardized data")
+        svm_eval(writer, 'linear', 'std', X_std, y, X_test_std, y_test, pi)
+
+        writer("\n\n----------------")
+        writer("kernel : poly (degree=2)")
+        writer("----------------")
+        writer("Standardized data")
+        svm_eval(writer, 'poly', 'std', X_std, y, X_test_std, y_test, pi,
+                 # poly kernel kwargs
+                 gamma=1, degree=2, coef=1)
+
+        writer("\n\n----------------")
+        writer("kernel : RBF (log gamma = -2)")
+        writer("----------------")
+        writer("Standardized data")
+        svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test, pi,
+                 # poly kernel kwargs
+                 gamma=np.exp(-2), csi=1)
+
+        writer("\n\n----------------")
+        writer("kernel : RBF (log gamma = -2)")
+        writer("----------------")
+        writer("Standardized data")
+        svm_eval(writer, 'rbf', 'std', X_std, y, X_test_std, y_test, pi,
+                 # poly kernel kwargs
+                 gamma=np.exp(-1), csi=1)
+        writer("\n")
+    writer.destroy()

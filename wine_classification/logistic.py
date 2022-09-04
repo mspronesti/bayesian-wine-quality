@@ -30,8 +30,11 @@ from mlprlib.logistic import (
 l_list = [0, 1e-6, 1e-4, 1e-2, 1, 100]
 
 
-def lr_lambda_search(writer, lr_t: str, data_t: str,
-                     X_train, y_train, X_test, y_test):
+def lr_lambda_search(writer,
+                     lr_t: str, data_t: str,
+                     X_train, y_train,
+                     X_test, y_test,
+                     pi=.5):
     lr = QuadLogisticRegression() if lr_t == 'quadratic' \
         else LogisticRegression()
 
@@ -39,20 +42,21 @@ def lr_lambda_search(writer, lr_t: str, data_t: str,
     progress_bar = tqdm(l_list)
     for l in progress_bar:
         progress_bar.set_description(
-            "LR %s | lambda: %f | Data %s | single split" % (lr_t, l, data_t)
+            "LR %s | lambda: %f | Data %s | single split | pi %s"
+            % (lr_t, l, data_t, pi)
         )
         # set l_scaler
         lr.l_scaler = l
         # fit and evaluate score and minDCF
         lr.fit(X_train, y_train)
         _, score = lr.predict(X_test, return_proba=True)
-        min_dcf, _ = min_detection_cost_fun(score, y_test)
+        min_dcf, _ = min_detection_cost_fun(score, y_test, pi)
         writer("lambda: %s | %f" % (l, min_dcf))
         dcf_scores.append(min_dcf)
     return dcf_scores
 
 
-def split_data_lr(writer, lr_t: 'str', data_t: 'str', X, y):
+def split_data_lr(writer, lr_t: 'str', data_t: 'str', X, y, pi=.5):
     """
     Applies a Linear or Quadratic Logistic Regression
     to the wine dataset after a single split
@@ -65,13 +69,14 @@ def split_data_lr(writer, lr_t: 'str', data_t: 'str', X, y):
     writer("----------------")
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2)
-    return lr_lambda_search(writer, lr_t, data_t, X_train, y_train, X_val, y_val)
+    return lr_lambda_search(writer, lr_t, data_t, X_train, y_train, X_val, y_val, pi)
 
 
 def k_fold_lr(writer, lr_t: str,
               data_t: str,
               X, y,
               n_folds=5,
+              pi=.5,
               *,
               std=False,
               gauss=False,
@@ -106,16 +111,17 @@ def k_fold_lr(writer, lr_t: str,
     progress_bar = tqdm(l_list)
     for l in progress_bar:
         progress_bar.set_description(
-            "LR %s | lambda: %f | Data %s | k fold" % (lr_t, l, data_t)
+            "LR %s | lambda: %f | Data %s | k fold | pi %s"
+            % (lr_t, l, data_t, pi)
         )
         # set l_scaler
         lr.l_scaler = l
         cv.fit(X, y, lr, transformers)
         scores = cv.scores
-        min_dcf, _ = min_detection_cost_fun(scores, y)
+        min_dcf, _ = min_detection_cost_fun(scores, y, pi)
         writer("lambda: %s | %f" % (l, min_dcf))
         dcf_scores.append(min_dcf)
-
+    writer("----------------")
     return dcf_scores
 
 
@@ -128,7 +134,7 @@ def save_plots(dcf_raw, dcf_gauss, dcf_std, fig_name):
     plt.xlabel(r"$\lambda$")
     plt.ylabel("min DCF")
     plt.legend(["Raw", "Gaussianized", "Z-normalized"])
-    plt.savefig("../report/assets/%s.png" % fig_name)
+    plt.savefig("../report/assets/logistic/%s.png" % fig_name)
 
 
 if __name__ == '__main__':
@@ -137,51 +143,53 @@ if __name__ == '__main__':
 
     # load the dataset in the shape (n_samples, n_feats)
     X, y = load_wine_train(feats_first=False)
-    X_gauss = np.load('../results/gaussian_feats.npy').T
-    X_std = standardize(X)
+    # X_gauss = np.load('../results/gaussian_feats.npy').T
+    # X_std = standardize(X)
 
     # writing LR results
-    writer = Writer("../results/lr_results.txt")
-
-    writer("----------------")
-    writer("LR Type : linear")
-    writer("----------------")
-    writer("Raw data")
-    scores_1_raw = split_data_lr(writer, 'linear', 'raw', X, y)
-    scores_5_raw = k_fold_lr(writer, 'linear', 'raw', X, y, n_folds)
-
-    writer("Gaussianized data")
-    scores_1_gauss = split_data_lr(writer, 'linear', 'gauss', X_gauss, y)
-    scores_5_gauss = k_fold_lr(writer, 'linear', 'gauss', X, y, n_folds, gauss=True)
-
-    writer("Standardized data")
-    scores_1_std = split_data_lr(writer, 'linear', 'std', X_std, y)
-    scores_5_std = k_fold_lr(writer, 'linear', 'std', X, y, n_folds, std=True)
-
-    # save scores plot of linear LR
-    save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "lr_single")
-    save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "lr_kfold")
-
-    writer("\n----------------")
-    writer("LR type : quadratic")
-    writer("----------------")
-    writer("Raw data")
-    scores_1_raw = split_data_lr(writer, 'quadratic', 'raw', X, y)
-    scores_5_raw = k_fold_lr(writer, 'quadratic', 'raw', X, y, n_folds)
-
-    writer("Gaussianized data")
-    scores_1_gauss = split_data_lr(writer, 'quadratic', 'gauss', X_gauss, y)
-    scores_5_gauss = k_fold_lr(writer, 'quadratic', 'gauss', X, y, n_folds, gauss=True)
-
-    writer("Standardized data")
-    scores_1_std = split_data_lr(writer, 'quadratic', 'std', X_std, y)
-    scores_5_std = k_fold_lr(writer, 'quadratic', 'std', X, y, n_folds, std=True)
-
-    # save scores plot of linear LR
-    save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "qlr_single")
-    save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "qlr_kfold")
-
-    writer.destroy()
+    # writer = Writer("../results/lr_results.txt")
+    #
+    # for pi in [.1, .5, .9]:
+    #     writer("*********** pi = %s ***********\n" % pi)
+    #     writer("----------------")
+    #     writer("LR Type : linear")
+    #     writer("----------------")
+    #     writer("Raw data")
+    #     scores_1_raw = split_data_lr(writer, 'linear', 'raw', X, y, pi)
+    #     scores_5_raw = k_fold_lr(writer, 'linear', 'raw', X, y, n_folds, pi)
+    #
+    #     writer("Gaussianized data")
+    #     scores_1_gauss = split_data_lr(writer, 'linear', 'gauss', X_gauss, y, pi)
+    #     scores_5_gauss = k_fold_lr(writer, 'linear', 'gauss', X, y, n_folds, pi, gauss=True)
+    #
+    #     writer("Standardized data")
+    #     scores_1_std = split_data_lr(writer, 'linear', 'std', X_std, y, pi)
+    #     scores_5_std = k_fold_lr(writer, 'linear', 'std', X, y, n_folds, pi, std=True)
+    #
+    #     # save scores plot of linear LR
+    #     save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "lr_single_%s" % pi)
+    #     save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "lr_kfold_%s" % pi)
+    #
+    #     writer("\n----------------")
+    #     writer("LR type : quadratic")
+    #     writer("----------------")
+    #     writer("Raw data")
+    #     scores_1_raw = split_data_lr(writer, 'quadratic', 'raw', X, y, pi)
+    #     scores_5_raw = k_fold_lr(writer, 'quadratic', 'raw', X, y, n_folds, pi)
+    #
+    #     writer("Gaussianized data")
+    #     scores_1_gauss = split_data_lr(writer, 'quadratic', 'gauss', X_gauss, y, pi)
+    #     scores_5_gauss = k_fold_lr(writer, 'quadratic', 'gauss', X, y, n_folds, pi, gauss=True)
+    #
+    #     writer("Standardized data")
+    #     scores_1_std = split_data_lr(writer, 'quadratic', 'std', X_std, y, pi)
+    #     scores_5_std = k_fold_lr(writer, 'quadratic', 'std', X, y, n_folds, pi, std=True)
+    #
+    #     # save scores plot of linear LR
+    #     save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "qlr_single_%s" % pi)
+    #     save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "qlr_kfold_%s" % pi)
+    #     writer("\n")
+    # writer.destroy()
 
     ##########################
     # evaluation on test set
@@ -207,26 +215,27 @@ if __name__ == '__main__':
     X_test_pca = pca.transform(X_test_std)
 
     writer = Writer("../results/lr_results_eval.txt")
-    for lr_t in ["linear", "quadratic"]:
-        writer("----------------")
-        writer("LR Type : %s" % lr_t)
-        writer("----------------")
+    for pi in [.1, .5, .9]:
+        writer("************* pi = %s *************\n" % pi)
+        for lr_t in ["linear", "quadratic"]:
+            writer("----------------")
+            writer("LR Type : %s" % lr_t)
+            writer("----------------")
 
-        writer("Raw data")
-        writer("----------------")
-        lr_lambda_search(writer, lr_t, 'raw', X, y, X_test, y_test)
+            writer("Raw data")
+            writer("----------------")
+            lr_lambda_search(writer, lr_t, 'raw', X, y, X_test, y_test, pi)
 
-        writer("Gaussian data")
-        writer("----------------")
-        lr_lambda_search(writer, lr_t, 'gauss', X_gauss, y, X_test_gauss, y_test)
+            writer("Gaussian data")
+            writer("----------------")
+            lr_lambda_search(writer, lr_t, 'gauss', X_gauss, y, X_test_gauss, y_test, pi)
 
-        writer("Standardized data")
-        writer("----------------")
-        lr_lambda_search(writer, lr_t, 'std', X_std, y, X_test_std, y_test)
+            writer("Standardized data")
+            writer("----------------")
+            lr_lambda_search(writer, lr_t, 'std', X_std, y, X_test_std, y_test, pi)
 
-        writer("Standardized data, PCA(n_components=10)")
-        writer("----------------")
-        lr_lambda_search(writer, lr_t, 'std', X_pca, y, X_test_pca, y_test)
-        writer("\n\n")
-
+            writer("Standardized data, PCA(n_components=10)")
+            writer("----------------")
+            lr_lambda_search(writer, lr_t, 'std', X_pca, y, X_test_pca, y_test, pi)
+            writer("\n\n")
     writer.destroy()

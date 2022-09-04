@@ -1,3 +1,78 @@
+*********** pi = 0.1 ***********
+
+----------------
+Raw data
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.702319
+model: NaiveBayes 	| dcf: 0.822181
+model: TiedGaussian 	| dcf: 0.753805
+model: TiedNaiveBayes 	| dcf: 0.820513
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.781403
+model: NaiveBayes 	| dcf: 0.847471
+model: TiedGaussian 	| dcf: 0.810767
+model: TiedNaiveBayes 	| dcf: 0.866232
+
+----------------
+Gaussian data
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.760684
+model: NaiveBayes 	| dcf: 0.840740
+model: TiedGaussian 	| dcf: 0.726291
+model: TiedNaiveBayes 	| dcf: 0.834065
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.799347
+model: NaiveBayes 	| dcf: 0.848287
+model: TiedGaussian 	| dcf: 0.791191
+model: TiedNaiveBayes 	| dcf: 0.869494
+
+----------------
+Gaussian data, PCA(n_components=10)
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.726291
+model: NaiveBayes 	| dcf: 0.707529
+model: TiedGaussian 	| dcf: 0.709197
+model: TiedNaiveBayes 	| dcf: 0.709197
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.788744
+model: NaiveBayes 	| dcf: 0.818923
+model: TiedGaussian 	| dcf: 0.794454
+model: TiedNaiveBayes 	| dcf: 0.792822
+
+----------------
+Gaussian data, PCA(n_components=9)
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.739844
+model: NaiveBayes 	| dcf: 0.719617
+model: TiedGaussian 	| dcf: 0.719413
+model: TiedNaiveBayes 	| dcf: 0.726291
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.811582
+model: NaiveBayes 	| dcf: 0.818923
+model: TiedGaussian 	| dcf: 0.809951
+model: TiedNaiveBayes 	| dcf: 0.809135
+*********** pi = 0.5 ***********
+
 ----------------
 Raw data
 ----------------
@@ -69,3 +144,76 @@ model: GaussianClassifier 	| dcf: 0.304241
 model: NaiveBayes 	| dcf: 0.392333
 model: TiedGaussian 	| dcf: 0.351550
 model: TiedNaiveBayes 	| dcf: 0.353181
+*********** pi = 0.9 ***********
+
+----------------
+Raw data
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.802023
+model: NaiveBayes 	| dcf: 0.941465
+model: TiedGaussian 	| dcf: 0.706405
+model: TiedNaiveBayes 	| dcf: 0.908367
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.842577
+model: NaiveBayes 	| dcf: 0.921697
+model: TiedGaussian 	| dcf: 0.746330
+model: TiedNaiveBayes 	| dcf: 0.932300
+
+----------------
+Gaussian data
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.728777
+model: NaiveBayes 	| dcf: 0.865768
+model: TiedGaussian 	| dcf: 0.796506
+model: TiedNaiveBayes 	| dcf: 0.928287
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.773246
+model: NaiveBayes 	| dcf: 0.872757
+model: TiedGaussian 	| dcf: 0.856444
+model: TiedNaiveBayes 	| dcf: 0.939641
+
+----------------
+Gaussian data, PCA(n_components=10)
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.655532
+model: NaiveBayes 	| dcf: 0.788845
+model: TiedGaussian 	| dcf: 0.698437
+model: TiedNaiveBayes 	| dcf: 0.710389
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.715334
+model: NaiveBayes 	| dcf: 0.874388
+model: TiedGaussian 	| dcf: 0.802610
+model: TiedNaiveBayes 	| dcf: 0.822186
+
+----------------
+Gaussian data, PCA(n_components=9)
+----------------
+----------------
+Single split
+----------------
+model: GaussianClassifier 	| dcf: 0.698131
+model: NaiveBayes 	| dcf: 0.790990
+model: TiedGaussian 	| dcf: 0.731535
+model: TiedNaiveBayes 	| dcf: 0.746246
+----------------
+5 fold cross validation
+----------------
+model: GaussianClassifier 	| dcf: 0.716150
+model: NaiveBayes 	| dcf: 0.825449
+model: TiedGaussian 	| dcf: 0.791191
+model: TiedNaiveBayes 	| dcf: 0.813214

@@ -1,3 +1,38 @@
+*********** pi = 0.1 ***********
+
+----------------
+Raw data
+----------------
+model: GaussianClassifier 	| dcf: 0.655979
+model: NaiveBayes 	| dcf: 0.731280
+model: TiedGaussian 	| dcf: 0.681043
+model: TiedNaiveBayes 	| dcf: 0.737546
+
+----------------
+Gaussian data
+----------------
+model: GaussianClassifier 	| dcf: 0.679053
+model: NaiveBayes 	| dcf: 0.760136
+model: TiedGaussian 	| dcf: 0.698038
+model: TiedNaiveBayes 	| dcf: 0.824115
+
+----------------
+Gaussian data, PCA(n_components=10)
+----------------
+model: GaussianClassifier 	| dcf: 0.709525
+model: NaiveBayes 	| dcf: 0.767073
+model: TiedGaussian 	| dcf: 0.717133
+model: TiedNaiveBayes 	| dcf: 0.719903
+
+----------------
+Gaussian data, PCA(n_components=9)
+----------------
+model: GaussianClassifier 	| dcf: 0.736711
+model: NaiveBayes 	| dcf: 0.787729
+model: TiedGaussian 	| dcf: 0.732973
+model: TiedNaiveBayes 	| dcf: 0.745505
+*********** pi = 0.5 ***********
+
 ----------------
 Raw data
 ----------------
@@ -29,3 +64,36 @@ model: GaussianClassifier 	| dcf: 0.326201
 model: NaiveBayes 	| dcf: 0.337932
 model: TiedGaussian 	| dcf: 0.322008
 model: TiedNaiveBayes 	| dcf: 0.317269
+*********** pi = 0.9 ***********
+
+----------------
+Raw data
+----------------
+model: GaussianClassifier 	| dcf: 0.700010
+model: NaiveBayes 	| dcf: 0.867350
+model: TiedGaussian 	| dcf: 0.705152
+model: TiedNaiveBayes 	| dcf: 0.929789
+
+----------------
+Gaussian data
+----------------
+model: GaussianClassifier 	| dcf: 0.727079
+model: NaiveBayes 	| dcf: 0.910866
+model: TiedGaussian 	| dcf: 0.798154
+model: TiedNaiveBayes 	| dcf: 0.941954
+
+----------------
+Gaussian data, PCA(n_components=10)
+----------------
+model: GaussianClassifier 	| dcf: 0.680936
+model: NaiveBayes 	| dcf: 0.885899
+model: TiedGaussian 	| dcf: 0.797215
+model: TiedNaiveBayes 	| dcf: 0.804123
+
+----------------
+Gaussian data, PCA(n_components=9)
+----------------
+model: GaussianClassifier 	| dcf: 0.704778
+model: NaiveBayes 	| dcf: 0.790494
+model: TiedGaussian 	| dcf: 0.827177
+model: TiedNaiveBayes 	| dcf: 0.838666
