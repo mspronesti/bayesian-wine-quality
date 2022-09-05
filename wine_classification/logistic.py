@@ -143,53 +143,53 @@ if __name__ == '__main__':
 
     # load the dataset in the shape (n_samples, n_feats)
     X, y = load_wine_train(feats_first=False)
-    # X_gauss = np.load('../results/gaussian_feats.npy').T
-    # X_std = standardize(X)
+    X_gauss = np.load('../results/gaussian_feats.npy').T
+    X_std = standardize(X)
 
     # writing LR results
-    # writer = Writer("../results/lr_results.txt")
-    #
-    # for pi in [.1, .5, .9]:
-    #     writer("*********** pi = %s ***********\n" % pi)
-    #     writer("----------------")
-    #     writer("LR Type : linear")
-    #     writer("----------------")
-    #     writer("Raw data")
-    #     scores_1_raw = split_data_lr(writer, 'linear', 'raw', X, y, pi)
-    #     scores_5_raw = k_fold_lr(writer, 'linear', 'raw', X, y, n_folds, pi)
-    #
-    #     writer("Gaussianized data")
-    #     scores_1_gauss = split_data_lr(writer, 'linear', 'gauss', X_gauss, y, pi)
-    #     scores_5_gauss = k_fold_lr(writer, 'linear', 'gauss', X, y, n_folds, pi, gauss=True)
-    #
-    #     writer("Standardized data")
-    #     scores_1_std = split_data_lr(writer, 'linear', 'std', X_std, y, pi)
-    #     scores_5_std = k_fold_lr(writer, 'linear', 'std', X, y, n_folds, pi, std=True)
-    #
-    #     # save scores plot of linear LR
-    #     save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "lr_single_%s" % pi)
-    #     save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "lr_kfold_%s" % pi)
-    #
-    #     writer("\n----------------")
-    #     writer("LR type : quadratic")
-    #     writer("----------------")
-    #     writer("Raw data")
-    #     scores_1_raw = split_data_lr(writer, 'quadratic', 'raw', X, y, pi)
-    #     scores_5_raw = k_fold_lr(writer, 'quadratic', 'raw', X, y, n_folds, pi)
-    #
-    #     writer("Gaussianized data")
-    #     scores_1_gauss = split_data_lr(writer, 'quadratic', 'gauss', X_gauss, y, pi)
-    #     scores_5_gauss = k_fold_lr(writer, 'quadratic', 'gauss', X, y, n_folds, pi, gauss=True)
-    #
-    #     writer("Standardized data")
-    #     scores_1_std = split_data_lr(writer, 'quadratic', 'std', X_std, y, pi)
-    #     scores_5_std = k_fold_lr(writer, 'quadratic', 'std', X, y, n_folds, pi, std=True)
-    #
-    #     # save scores plot of linear LR
-    #     save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "qlr_single_%s" % pi)
-    #     save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "qlr_kfold_%s" % pi)
-    #     writer("\n")
-    # writer.destroy()
+    writer = Writer("../results/lr_results.txt")
+
+    for pi in [.1, .5, .9]:
+        writer("*********** pi = %s ***********\n" % pi)
+        writer("----------------")
+        writer("LR Type : linear")
+        writer("----------------")
+        writer("Raw data")
+        scores_1_raw = split_data_lr(writer, 'linear', 'raw', X, y, pi)
+        scores_5_raw = k_fold_lr(writer, 'linear', 'raw', X, y, n_folds, pi)
+
+        writer("Gaussianized data")
+        scores_1_gauss = split_data_lr(writer, 'linear', 'gauss', X_gauss, y, pi)
+        scores_5_gauss = k_fold_lr(writer, 'linear', 'gauss', X, y, n_folds, pi, gauss=True)
+
+        writer("Standardized data")
+        scores_1_std = split_data_lr(writer, 'linear', 'std', X_std, y, pi)
+        scores_5_std = k_fold_lr(writer, 'linear', 'std', X, y, n_folds, pi, std=True)
+
+        # save scores plot of linear LR
+        save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "lr_single_%s" % pi)
+        save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "lr_kfold_%s" % pi)
+
+        writer("\n----------------")
+        writer("LR type : quadratic")
+        writer("----------------")
+        writer("Raw data")
+        scores_1_raw = split_data_lr(writer, 'quadratic', 'raw', X, y, pi)
+        scores_5_raw = k_fold_lr(writer, 'quadratic', 'raw', X, y, n_folds, pi)
+
+        writer("Gaussianized data")
+        scores_1_gauss = split_data_lr(writer, 'quadratic', 'gauss', X_gauss, y, pi)
+        scores_5_gauss = k_fold_lr(writer, 'quadratic', 'gauss', X, y, n_folds, pi, gauss=True)
+
+        writer("Standardized data")
+        scores_1_std = split_data_lr(writer, 'quadratic', 'std', X_std, y, pi)
+        scores_5_std = k_fold_lr(writer, 'quadratic', 'std', X, y, n_folds, pi, std=True)
+
+        # save scores plot of linear LR
+        save_plots(scores_1_raw, scores_1_gauss, scores_1_std, "qlr_single_%s" % pi)
+        save_plots(scores_5_raw, scores_5_gauss, scores_5_std, "qlr_kfold_%s" % pi)
+        writer("\n")
+    writer.destroy()
 
     ##########################
     # evaluation on test set
