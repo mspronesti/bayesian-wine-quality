@@ -1,0 +1,96 @@
+\section{Calibration}\label{sec_calib}
+So far, we only considered the minimum detection cost as a metric to evaluate the different models. However, the cost we pay depends on the threshold we use to perform the class assignments. In this section, we aim at assessing the performances of the best selected classifiers using the optimal theoretical threshold $t_{opt} = - log \frac{\tilde{\pi}}{1-\tilde{\pi}}$ as well as assessing the performances after calibrating the scores and after fusing models.
+
+\subsection{Scores on different thresholds}
+The first analysis we conduct refers to the detection cost function using as threshold the optimal theoretical one. This metric is referred to as the \textbf{actual DCF}.
+
+ The obtained results applying $t_{opt}$ are reported in Table \ref{tab:calib}, where we notice a slight worsening of the performances, which is compatible with the fact that the tested models are non-probabilistic, which implies they do not account for variations in the data, leading to uncalibrated scores.
+
+\noindent
+\begin{table}[H]
+	\resizebox{.5\textwidth}{!}{
+		\begin{tabular}{ P{4cm} P{2cm} P{3cm} }
+			\hline
+			\hline
+			&  \makecell{\textbf{5-fold} $(\tilde{\pi} = 0.5)$}\\
+			\hline	
+			& min DCF & act DCF $(t_{opt})$ \\	
+			\hline
+			RBF SVC  & 0.215 & 0.234 \\
+			Quad LR  & 0.273 & 0.286  \\	
+			GMM      & 0.280 & 0.298  \\
+			\hline
+		\end{tabular}
+	}
+	\caption{minimum and actual DCF for the best performing models}
+	\label{tab:calib}
+\end{table}
+
+To tackle this problem we will employ a twofold approach: on the one hand, we will compute a threshold $t^*$ for each application, i.e. for each fold we select the threshold that gives the minimum DCF for an
+application on the validation set; on the other hand, we will choose a transformation function performing the mapping $s \to s_{cal} = f(s)$, being $f(\cdot)$ a linear function
+
+\begin{align*}
+	f(s) = \alpha s + \beta \underbrace{- log \tfrac{\tilde{\pi}}{1- \tilde{\pi}}}_{t_{opt}}
+\end{align*}
+
+where $\alpha$ and $\beta$ are estimated via a Linear Logistic Regression. In fact, since the score of the Linear Logistic Regression acts as a posterior log-likelihood ratio, we will recover the calibrated score just subctracting the theoretical optimal threshold $t_{opt}$. We apply this approach trying different values of $\lambda$ and eventually picking the best one for each scenario.
+
+The calibrated scores are report in Table \ref{tab:calib2}
+
+
+\noindent
+\begin{table}[H]
+	\resizebox{.5\textwidth}{!}{
+		\begin{tabular}{ P{4cm} P{2cm} P{3cm} }
+			\hline
+			\hline
+			&  \makecell{\textbf{5-fold} $(\tilde{\pi} = 0.5)$}\\
+			\hline
+			& act DCF ($t^*$) & calibrated (LR)	\\	
+			\hline
+			RBF SVC  &  0.223 & 0.229\\
+			Quad LR  &  0.284 & 0.289 \\	
+			GMM      &  0.292 & 0.301 \\
+			\hline
+		\end{tabular}
+	}
+	\caption{actual estimated and calibrated DCF for the best performing models}
+	\label{tab:calib2}
+\end{table}
+
+We notice that the estimated threshold improves the scores, while the calibration with the LR model proves ineffective, as we experience a worsening of the results. 
+
+
+\subsection{Combining the best classifiers}
+In this section, we analyze the performances of the chosen models, in terms of min and actual DCF, when they're fused, i.e. we combine the scores yielded by the different classifier as follows
+
+\begin{align*}
+	S = w^T s + b
+\end{align*}
+
+being $s$ the array of scores and $w, b$ the parameters of a Linear Logistic Regression. We again do a sweep on different values of $\lambda$ and operate using a 5-fold cross validation approach. The "fusions" taken into account are those involving the RBF SVC (the best performing model we have), i.e. we discard the fusion between the Quadratic Logistic Regression an the Gaussian Mixture. Table \ref{tab:calib_fus} reports the obtained calibrated scores.
+
+\noindent
+\begin{table}[H]
+	\resizebox{.5\textwidth}{!}{
+		\begin{tabular}{ P{3.5cm} P{2cm} P{3cm} }
+			\hline
+			\hline
+			&  \makecell{\textbf{5-fold} $(\tilde{\pi} = 0.5)$}\\
+			\hline
+			& min DCF & act DCF ($t_{opt}$)\\	
+			\hline
+			SVC + QLR       & \boxit{red}{.35in}0.214 & \boxit{red}{.35in}0.219 \\
+			SVC + GMM  	    & 0.220 & 0.231 \\	
+			SVC + GMM + QLR & \boxit{cyan}{.35in}0.215 & 0.222 \\
+			\hline
+		\end{tabular}
+	}
+	\caption{minimum and actual DCF for the combination of best performing models}
+	\label{tab:calib_fus}
+\end{table}
+
+We notice that the min DCF improves w.r.t. all single models but the RBF Support Vector Classifier, whose performances are as good as the fusion scenario \footnote{The fusion between RBF SVC and Quad LR is unnoticeably better, at the expense of a more complex model}.   
+
+\subsection{Discussion}
+From the above results, we conclude that the fusion of the RBF SVC with the Quadratic Logistic Regression yields similar results of the same models fused with an 8 components full-covariance Gaussian Mixture Model. Our choice is, thereby, the simplest of the two as, given the same performances, the simpler of the two reduces the odds of incurring into overfitting and introduces, overall, less computational overheads. 
