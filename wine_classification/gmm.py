@@ -196,7 +196,7 @@ if __name__ == '__main__':
 
     writer = Writer("../results/gmm_results_eval.txt")
     for pi in [.1, .5, .9]:
-        writer("--------- pi = %s ----------\n" % pi)
+        writer("*********** pi = %s ***********\n" % pi)
         writer("----------------")
         writer("GMM Cov Type : Full")
         writer("----------------")

@@ -88,7 +88,14 @@ def calibrate(scores_train,
     return dcf_cal, dcf_est
 
 
-def kfold_calibrate(llr, y, l, n_folds: int = 5, pi=.5, cfn=1, cfp=1, seed=0, just_cal=True):
+def kfold_calibrate(llr,
+                    y,
+                    l,
+                    n_folds: int = 5,
+                    pi=.5, cfn=1, cfp=1,
+                    *,
+                    seed=0,
+                    compute_threshold: bool = False):
     """
     Calibrates scores using a Linear Logistic Regression in a
      K-fold cross validation
@@ -122,6 +129,10 @@ def kfold_calibrate(llr, y, l, n_folds: int = 5, pi=.5, cfn=1, cfp=1, seed=0, ju
         int, random seed for numpy.
         Default 0
 
+    compute_threshold:
+        whether to compute the threshold during calibration.
+        Default False
+
     Returns
     -------
         estimated and calibrated dcf
@@ -144,7 +155,7 @@ def kfold_calibrate(llr, y, l, n_folds: int = 5, pi=.5, cfn=1, cfp=1, seed=0, ju
         _, score = lr.predict(X_test, return_proba=True)
         scores_cal[idx_test] = score
 
-        if not just_cal:
+        if compute_threshold:
             _, opt_t = min_detection_cost_fun(X_train.reshape(X_train.shape[0], ),
                                               y_train, pi, cfn, cfp)
             opt_th_decisions[idx_test] = 1. * (X_test.reshape([X_test.shape[0], ]) > opt_t)
@@ -154,7 +165,7 @@ def kfold_calibrate(llr, y, l, n_folds: int = 5, pi=.5, cfn=1, cfp=1, seed=0, ju
     # compute actual dcf for calibrated score
     act_dcf_cal = detection_cost_fun(scores_cal, y, pi, cfn, cfp)
 
-    if just_cal:
+    if not compute_threshold:
         dcf_est = 0
     else:
         cm = confusion_matrix(y, opt_th_decisions)

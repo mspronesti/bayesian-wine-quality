@@ -72,16 +72,14 @@ def rbf_kernel(xi, xj, gamma=None, csi=0):
 
     Returns
     -------
-         Kernel matrix of shape (xi.shape[0], xj.shape[0])
+         Kernel matrix of shape (xi.shape[1], xj.shape[1])
     """
     if gamma is None:
         gamma = 1. / xi.shape[1]
 
-    x = (xi ** 2).sum()
-    x = x.reshape(x.size, 1)
-    y = (xj ** 2).sum()
-    y = y.reshape(1, y.size)
-    xy = xi.T @ xj
-
-    dist = x + y - 2 * xy
-    return np.exp(-gamma * dist) + csi
+    kern = np.zeros([xi.shape[1], xj.shape[1]])
+    for i in range(xi.shape[1]):
+        for j in range(xj.shape[1]):
+            norm = ((xi[:, i] - xj[:, j])**2).sum()
+            kern[i, j] = np.exp(-gamma * norm) + csi
+    return kern

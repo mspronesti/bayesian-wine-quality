@@ -3,7 +3,6 @@ Evaluate the scores and calibrated scores for the
 best 3 models and their fusions
 """
 import numpy as np
-from tqdm import tqdm
 
 from mlprlib.model_selection import (
     kfold_calibrate,
@@ -36,9 +35,10 @@ def scores_kfold_calibrate(llr, y, n_folds=5, pi=.5, cfn=1, cfp=1):
     act_dcf_est = 0.
     min_dcf_cal = 1.
     for _lambda in l_list:
-        just_cal = _lambda != l_list[-1]
+        # only compute the threshold for the last iteration
+        compute_threshold = _lambda == l_list[-1]
         act_dcf_cal, act_dcf_est = kfold_calibrate(llr, y, _lambda,
-                                                   n_folds, pi, cfn, cfp, just_cal=just_cal)
+                                                   n_folds, pi, cfn, cfp, compute_threshold=compute_threshold)
 
         if act_dcf_cal < min_dcf_cal:
             min_dcf_cal = act_dcf_cal

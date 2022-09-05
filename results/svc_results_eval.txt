@@ -4,64 +4,64 @@
 kernel : linear
 ----------------
 Raw data
-C: 0.1 | 1.000000
-C: 0.1 | 0.964043
-C: 1.0 | 0.986766
-C: 1.0 | 0.993921
-C: 10.0 | 1.000000
-C: 10.0 | 0.998494
+C: 0.1 | 1.000000 | balance: False
+C: 0.1 | 0.964043 | balance: True
+C: 1.0 | 0.986766 | balance: False
+C: 1.0 | 0.993921 | balance: True
+C: 10.0 | 1.000000 | balance: False
+C: 10.0 | 0.998494 | balance: True
 
 Gaussianized data
-C: 0.1 | 0.705459
-C: 0.1 | 0.694488
-C: 1.0 | 0.676174
-C: 1.0 | 0.691718
-C: 10.0 | 0.695455
-C: 10.0 | 0.754971
+C: 0.1 | 0.705459 | balance: False
+C: 0.1 | 0.694488 | balance: True
+C: 1.0 | 0.676174 | balance: False
+C: 1.0 | 0.691718 | balance: True
+C: 10.0 | 0.695455 | balance: False
+C: 10.0 | 0.754971 | balance: True
 
 Standardized data
-C: 0.1 | 0.663025
-C: 0.1 | 0.685132
-C: 1.0 | 0.670313
-C: 1.0 | 0.685132
-C: 10.0 | 0.665928
-C: 10.0 | 0.683758
+C: 0.1 | 0.663025 | balance: False
+C: 0.1 | 0.685132 | balance: True
+C: 1.0 | 0.670313 | balance: False
+C: 1.0 | 0.685132 | balance: True
+C: 10.0 | 0.665928 | balance: False
+C: 10.0 | 0.683758 | balance: True
 
 
 ----------------
 kernel : poly (degree=2)
 ----------------
 Standardized data
-C: 0.1 | 0.616877
-C: 0.1 | 0.650571
-C: 1.0 | 0.622417
-C: 1.0 | 0.658694
-C: 10.0 | 0.632608
-C: 10.0 | 0.680746
+C: 0.1 | 0.616877 | balance: False
+C: 0.1 | 0.650571 | balance: True
+C: 1.0 | 0.622417 | balance: False
+C: 1.0 | 0.658694 | balance: True
+C: 10.0 | 0.632608 | balance: False
+C: 10.0 | 0.680746 | balance: True
 
 
 ----------------
 kernel : RBF (log gamma = -2)
 ----------------
 Standardized data
-C: 0.1 | 1.000000
-C: 0.1 | 1.000000
-C: 1.0 | 1.000000
-C: 1.0 | 1.000000
-C: 10.0 | 1.000000
-C: 10.0 | 1.000000
+C: 0.1 | 0.670259 | balance: False
+C: 0.1 | 0.677547 | balance: True
+C: 1.0 | 0.666763 | balance: False
+C: 1.0 | 0.659904 | balance: True
+C: 10.0 | 0.705514 | balance: False
+C: 10.0 | 0.752817 | balance: True
 
 
 ----------------
-kernel : RBF (log gamma = -2)
+kernel : RBF (log gamma = -1)
 ----------------
 Standardized data
-C: 0.1 | 1.000000
-C: 0.1 | 1.000000
-C: 1.0 | 1.000000
-C: 1.0 | 1.000000
-C: 10.0 | 1.000000
-C: 10.0 | 1.000000
+C: 0.1 | 0.726840 | balance: False
+C: 0.1 | 0.719552 | balance: True
+C: 1.0 | 0.712615 | balance: False
+C: 1.0 | 0.731358 | balance: True
+C: 10.0 | 0.837857 | balance: False
+C: 10.0 | 0.861789 | balance: True
 
 
 ************* pi = 0.5 *************
@@ -70,64 +70,64 @@ C: 10.0 | 1.000000
 kernel : linear
 ----------------
 Raw data
-C: 0.1 | 0.695879
-C: 0.1 | 0.574869
-C: 1.0 | 0.470290
-C: 1.0 | 0.758118
-C: 10.0 | 0.852079
-C: 10.0 | 0.745953
+C: 0.1 | 0.695879 | balance: False
+C: 0.1 | 0.574869 | balance: True
+C: 1.0 | 0.470290 | balance: False
+C: 1.0 | 0.758118 | balance: True
+C: 10.0 | 0.852079 | balance: False
+C: 10.0 | 0.745953 | balance: True
 
 Gaussianized data
-C: 0.1 | 0.309255
-C: 0.1 | 0.323252
-C: 1.0 | 0.314236
-C: 1.0 | 0.328758
-C: 10.0 | 0.316647
-C: 10.0 | 0.352329
+C: 0.1 | 0.309255 | balance: False
+C: 0.1 | 0.323252 | balance: True
+C: 1.0 | 0.314236 | balance: False
+C: 1.0 | 0.328758 | balance: True
+C: 10.0 | 0.316647 | balance: False
+C: 10.0 | 0.352329 | balance: True
 
 Standardized data
-C: 0.1 | 0.314954
-C: 0.1 | 0.331929
-C: 1.0 | 0.318250
-C: 1.0 | 0.332792
-C: 10.0 | 0.325124
-C: 10.0 | 0.325442
+C: 0.1 | 0.314954 | balance: False
+C: 0.1 | 0.331929 | balance: True
+C: 1.0 | 0.318250 | balance: False
+C: 1.0 | 0.332792 | balance: True
+C: 10.0 | 0.325124 | balance: False
+C: 10.0 | 0.325442 | balance: True
 
 
 ----------------
 kernel : poly (degree=2)
 ----------------
 Standardized data
-C: 0.1 | 0.277545
-C: 0.1 | 0.277954
-C: 1.0 | 0.267474
-C: 1.0 | 0.280206
-C: 10.0 | 0.268517
-C: 10.0 | 0.284849
+C: 0.1 | 0.277545 | balance: False
+C: 0.1 | 0.277954 | balance: True
+C: 1.0 | 0.267474 | balance: False
+C: 1.0 | 0.280206 | balance: True
+C: 10.0 | 0.268517 | balance: False
+C: 10.0 | 0.284849 | balance: True
 
 
 ----------------
 kernel : RBF (log gamma = -2)
 ----------------
 Standardized data
-C: 0.1 | 0.997472
-C: 0.1 | 0.997472
-C: 1.0 | 1.000000
-C: 1.0 | 1.000000
-C: 10.0 | 0.997472
-C: 10.0 | 1.000000
+C: 0.1 | 0.302230 | balance: False
+C: 0.1 | 0.298830 | balance: True
+C: 1.0 | 0.266465 | balance: False
+C: 1.0 | 0.247266 | balance: True
+C: 10.0 | 0.258050 | balance: False
+C: 10.0 | 0.259819 | balance: True
 
 
 ----------------
-kernel : RBF (log gamma = -2)
+kernel : RBF (log gamma = -1)
 ----------------
 Standardized data
-C: 0.1 | 0.997472
-C: 0.1 | 0.997472
-C: 1.0 | 1.000000
-C: 1.0 | 1.000000
-C: 10.0 | 0.997472
-C: 10.0 | 1.000000
+C: 0.1 | 0.298175 | balance: False
+C: 0.1 | 0.301725 | balance: True
+C: 1.0 | 0.252406 | balance: False
+C: 1.0 | 0.241042 | balance: True
+C: 10.0 | 0.311846 | balance: False
+C: 10.0 | 0.301187 | balance: True
 
 
 ************* pi = 0.9 *************
@@ -136,63 +136,63 @@ C: 10.0 | 1.000000
 kernel : linear
 ----------------
 Raw data
-C: 0.1 | 0.932117
-C: 0.1 | 0.926598
-C: 1.0 | 0.903882
-C: 1.0 | 0.967786
-C: 10.0 | 0.965458
-C: 10.0 | 0.990238
+C: 0.1 | 0.932117 | balance: False
+C: 0.1 | 0.926598 | balance: True
+C: 1.0 | 0.903882 | balance: False
+C: 1.0 | 0.967786 | balance: True
+C: 10.0 | 0.965458 | balance: False
+C: 10.0 | 0.990238 | balance: True
 
 Gaussianized data
-C: 0.1 | 0.841594
-C: 0.1 | 0.786928
-C: 1.0 | 0.877000
-C: 1.0 | 0.784600
-C: 10.0 | 0.847114
-C: 10.0 | 0.699859
+C: 0.1 | 0.841594 | balance: False
+C: 0.1 | 0.786928 | balance: True
+C: 1.0 | 0.877000 | balance: False
+C: 1.0 | 0.784600 | balance: True
+C: 10.0 | 0.847114 | balance: False
+C: 10.0 | 0.699859 | balance: True
 
 Standardized data
-C: 0.1 | 0.694264
-C: 0.1 | 0.652288
-C: 1.0 | 0.663777
-C: 1.0 | 0.662989
-C: 10.0 | 0.675942
-C: 10.0 | 0.656268
+C: 0.1 | 0.694264 | balance: False
+C: 0.1 | 0.652288 | balance: True
+C: 1.0 | 0.663777 | balance: False
+C: 1.0 | 0.662989 | balance: True
+C: 10.0 | 0.675942 | balance: False
+C: 10.0 | 0.656268 | balance: True
 
 
 ----------------
 kernel : poly (degree=2)
 ----------------
 Standardized data
-C: 0.1 | 0.606145
-C: 0.1 | 0.571865
-C: 1.0 | 0.571527
-C: 1.0 | 0.556620
-C: 10.0 | 0.575582
-C: 10.0 | 0.545657
+C: 0.1 | 0.606145 | balance: False
+C: 0.1 | 0.571865 | balance: True
+C: 1.0 | 0.571527 | balance: False
+C: 1.0 | 0.556620 | balance: True
+C: 10.0 | 0.575582 | balance: False
+C: 10.0 | 0.545657 | balance: True
 
 
 ----------------
 kernel : RBF (log gamma = -2)
 ----------------
 Standardized data
-C: 0.1 | 8.852893
-C: 0.1 | 8.852893
-C: 1.0 | 1.147107
-C: 1.0 | 1.147107
-C: 10.0 | 8.852893
-C: 10.0 | 1.147107
+C: 0.1 | 0.569987 | balance: False
+C: 0.1 | 0.625442 | balance: True
+C: 1.0 | 0.531052 | balance: False
+C: 1.0 | 0.459902 | balance: True
+C: 10.0 | 0.610236 | balance: False
+C: 10.0 | 0.515695 | balance: True
 
 
 ----------------
-kernel : RBF (log gamma = -2)
+kernel : RBF (log gamma = -1)
 ----------------
 Standardized data
-C: 0.1 | 8.852893
-C: 0.1 | 8.852893
-C: 1.0 | 1.147107
-C: 1.0 | 1.147107
-C: 10.0 | 8.852893
-C: 10.0 | 1.147107
+C: 0.1 | 0.679022 | balance: False
+C: 0.1 | 0.664979 | balance: True
+C: 1.0 | 0.682138 | balance: False
+C: 1.0 | 0.583016 | balance: True
+C: 10.0 | 0.797480 | balance: False
+C: 10.0 | 0.752500 | balance: True
 
 
