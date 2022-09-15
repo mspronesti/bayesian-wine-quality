@@ -1,0 +1,12 @@
+This file contains some notes for future students wondering what's good and what's bad in this work, according to the instructor of the course.
+The project received full score (18/18).
+
+Things the instructor appreciated:
+- no data leakages introduced in k-fold cv 
+- model fusion appropriately performed
+- the choice of the simplest model when comparing different ones yielding similar performances (avoids overfitting, better generalization) 
+
+Flaws of the work (no impact on the grade though):
+- they expected for the test set the same kind of plots showed for the training set, instead of simply showing the best results (in other words, they wanted to see if the chosen hyperparameters were actually the best on test data)
+- they expected to see the calibration even for different applications (with pi=.1 and pi=.9)
+
